@@ -23,6 +23,8 @@
 \usepackage{color}
 \usepackage{placeins}
 \usepackage{adjustbox}
+\usepackage{empheq}
+\usepackage{xcolor}
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -56,6 +58,9 @@
 \newcommand{\info}[2][1=]{\todo[linecolor=OliveGreen,backgroundcolor=OliveGreen!25,bordercolor=OliveGreen,#1]{#2}}
 \newcommand{\improvement}[2][1=]{\todo[linecolor=Plum,backgroundcolor=Plum!25,bordercolor=Plum,#1]{#2}}
 \newcommand{\thiswillnotshow}[2][1=]{\todo[disable,#1]{#2}}
+
+\newcommand{\boxedeq}[2]{\begin{empheq}[box={\fboxsep=6pt\fbox}]{align}\label{#1}#2\end{empheq}}
+\newcommand{\coloredeq}[2]{\begin{empheq}[box=\colorbox{gray}]{align}\label{#1}#2\end{empheq}}
 
 \newcommand{\specialcell}[2][c]{%
 	\begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
@@ -147,6 +152,14 @@ Submitted to: \\[0.5\baselineskip]
 		Left Boundary Condition: $C_{1} = 1$ \\
 		Right Boundary Condition: $C_{2} = -0.2$ \\
 		Thermal Diffusivity: $K = 0.1$ \\
+		Time Ramp: $t_{ramp} = 1$ \\
+
+		\noindent
+		\textbf{Initial Conditions}
+		
+		\begin{equation}
+			u(x, t = 0) = 0
+		\end{equation}	
 	
 		\noindent
 		\textbf{Boundary Conditions}
@@ -171,9 +184,9 @@ Submitted to: \\[0.5\baselineskip]
 		\noindent
 		\textbf{Heating Source Function}
 		
-		\begin{equation}
-			q(x, t) = 0
-		\end{equation}
+%		\begin{equation}
+%			q(x, t) = 0
+%		\end{equation}
 		
 		\begin{equation}
 			q(x, t) = -sin(\omega t) * exp\left(\frac{-(x - \frac{L}{2})^{2}}{\sigma^{2}}\right)
@@ -198,9 +211,6 @@ Submitted to: \\[0.5\baselineskip]
 			u(x + \Delta x) + u(x - \Delta x) = 2u(x) + (\Delta x)^{2} u^{(2)}(x) + O(h^{4})
 		\end{equation}	
 		
-		\noindent
-		Quadratic Convergence
-		
 		\begin{equation}
 			u^{(2)}(x) = \frac{u(x + \Delta x) - 2 u(x) + u(x - \Delta x)}{(\Delta x)^{2}} + O(h^{2})
 		\end{equation}	
@@ -209,10 +219,339 @@ Submitted to: \\[0.5\baselineskip]
 		
 		\noindent
 		\textbf{Explicit Euler}
+
+		\noindent
+		Let $n$ denote the time step, and $i$ denote the grid point
+		
+		\begin{equation}
+			u_{n+1,i} - u_{n,\i} = \int_{t_{n}}^{t_{n+1}} f(t, u(t)) dt = \Delta t * f(t_{n}, u_{n}) = \Delta t \big[ K \frac{\partial^{2} u_{n}}{\partial x^{2}} + q_{n}(x) \big]_{i}
+		\end{equation}	
+		
+		\begin{equation}
+			u_{n+1,i} - u_{n,\i} = \Delta t \big[ K \big(\frac{u_{n}(x + \Delta x) - 2 u_{n}(x) + u_{n}(x - \Delta x)}{(\Delta x)^{2}}\big) + q_{n}(x) \big]_{i}
+		\end{equation}
+		
+		\noindent
+		Where
+		
+		\begin{equation}
+			\begin{split}
+				u_{n}(x + \Delta x) = u_{n,i+1} \\
+				u_{n}(x)            = u_{n,i} \\
+				u_{n}(x - \Delta x) = u_{n,i-1}
+			\end{split}
+		\end{equation}
+		
+		\begin{equation}
+			u_{n+1,i} - u_{n,i} = \Delta t \big[ K \big(\frac{u_{n,i+1} - 2 u_{n,i} + u_{n,\i-1}}{(\Delta x)^{2}}\big) + q_{n,i}(x) \big]
+		\end{equation}
+		
+		\begin{equation}
+			u_{n+1,i} = u_{n,i} + \Delta t \big[ K \big(\frac{u_{n,i+1} - 2 u_{n,i} + u_{n,\i-1}}{(\Delta x)^{2}}\big) + q_{n,i}(x) \big]
+		\end{equation}
+		
+		\noindent
+		We define the CFL Number to be:
+		
+		\begin{equation}
+			CFL = K \frac{\Delta t}{(\Delta x)^{2}}
+		\end{equation}
 	
+		\boxedeq{}{u_{n+1,i} = CFL * u_{n,i+1} + (1 - 2 CFL) * u_{n,i} + CFL * u_{n,i-1} + q_{n,i} \Delta t}
+		
+		\pagebreak
+		
+		\noindent
 		\textbf{Implicit Euler}
+		
+		\noindent
+		Let n denote the time step, and i denote the grid point
+		
+		\begin{equation}
+			u_{n+1,i} = u_{n,i} + \Delta t * f(t_{n+1}, u_{n+1}) = u_{n,i} + \Delta t \big[ K \frac{\partial^{2} u_{n+1}}{\partial x^{2}} + q_{n}(x)\big]_{i}
+		\end{equation}
+		
+		\begin{equation}
+			u_{n+1,i} = u_{n,i} + \Delta t \big[ K \big(\frac{u_{n+1}(x + \Delta x) - 2 u_{n+1} (x) + u_{n+1} (x - \Delta x)}{\Delta x^{2}} \big) + q_{n}(x)\big]_{i}
+		\end{equation}
 	
+		\noindent
+		Where
+		
+		\begin{equation}
+			\begin{split}
+				u_{n+1}(x + \Delta x) = u_{n+1,i+1} \\
+				u_{n+1}(x)            = u_{n+1,i} \\
+				u_{n+1}(x - \Delta x) = u_{n+1,i-1}
+			\end{split}
+		\end{equation}
+		
+		\begin{equation}
+			u_{n+1,i} = u_{n,i} + \Delta t \big[ K \big(\frac{u_{n+1,i+1} - 2 u_{n+1,i} + u_{n+1,i-1}}{\Delta x^{2}} \big) + q_{n,i}(x)\big]
+		\end{equation}
+		
+		\begin{equation}
+			u_{n+1,i} - \Delta t \big[ K \big(\frac{u_{n+1,i+1} - 2 u_{n+1,i} + u_{n+1,i-1}}{\Delta x^{2}} \big)\big] =  u_{n,i} + q_{n,i}(x)
+		\end{equation}
+		
+		\begin{equation}
+			u_{n+1,i} - \frac{K \Delta t}{(\Delta x)^{2}} \big[ u_{n+1,i+1} - 2 u_{n+1,i} + u_{n+1,i-1} \big] =  u_{n,i} + q_{n,i}(x)
+		\end{equation}
+		
+		\noindent
+		We define the CFL Number to be:
+		
+		\begin{equation}
+			CFL = K \frac{\Delta t}{(\Delta x)^{2}}
+		\end{equation}
+		
+		\boxedeq{}{-CFL * u_{n+1,i+1} + (2 CFL + 1) * u_{n+1,i} - CFL * u_{n+1,i-1} = u_{n,i} + q_{n,i} \Delta t}
+		
+		\noindent
+		\textbf{Boundary Conditions} \\
+		
+		\noindent
+		1) Dirilecht Condition at the Left Boundary x = 0:	\\
+		
+		\begin{equation}
+			u(x=0, t) = \begin{cases} 
+          					C_{1} * \frac{t}{t_{ramp}} & t\leq t_{ramp} \\
+          					C_{1}                      & t > t_{ramp}
+       					\end{cases}
+    		\end{equation}
+    		
+    		\begin{equation}
+			-CFL * f_{BC1} + (2CFL + 1) * u_{n+1,2} - CFL * u_{n+1,3} = u_{n,2} + q_{n,2}\Delta t
+		\end{equation} 
+		
+		\boxedeq{}{(2CFL + 1) * u_{n+1,2} - CFL * u_{n+1,3} = u_{n,2} + q_{n,2}\Delta t + CFL * f_{BC1}} 
+		
+		\pagebreak
+		
+		\noindent
+		2) Neumann Condition at the Right Boundary x = L: \\
+		
+		\begin{equation}
+			\frac{\partial u}{\partial x}(x=L, t) = C_{2}
+    		\end{equation}
+    		
+    		\noindent
+    		Forward Difference
+    		
+    		\begin{equation}
+    			\frac{u_{n+1,i+1} - u_{n+1,i}}{\Delta x} = C_{2}
+    		\end{equation}
+    		
+    		\begin{equation}
+    			u_{n+1,i+1} = C_{2} \Delta x + u_{n+1,i}
+    		\end{equation}
+    		
+    		\noindent
+    		Where $i+1 = m$ and $m$ represents the last node (ghost node)
+    		
+    		\begin{equation}
+    			u_{n+1,m} = C_{2} \Delta x + u_{n+1,m-1}
+    		\end{equation}
+    		
+    		\noindent
+    		Plugging in
+    		
+    		\begin{equation}
+    			-CFL * u_{n+1,m-2} + (1 + 2CFL) * u_{n+1,m-1} - CFL * u_{n+1,m} = u_{n,m-1} + q_{n,m-1} \Delta t
+    		\end{equation}
+    		
+    		\begin{equation}
+    			-CFL * u_{n+1,m-2} + (1 + 2CFL) * u_{n+1,m-1} - CFL * \big(C_{2} \Delta x + u_{n+1,m-1} \big) = u_{n,m-1} + q_{n,m-1} \Delta t
+    		\end{equation}
+    		
+    		\begin{equation}
+    			-CFL * u_{n+1,m-2} + (1 + CFL) * u_{n+1,m-1} - CFL * C_{2} \Delta x  = u_{n,m-1} + q_{n,m-1} \Delta t
+    		\end{equation}
+    		
+    		\boxedeq{}{-CFL * u_{n+1,m-2} + (1 + CFL) * u_{n+1,m-1} = u_{n,m-1} + q_{n,m-1} \Delta t + CFL * C_{2} \Delta x}
+    		
+    		\noindent
+    		Central Difference
+    		
+    		\begin{equation}
+    			\frac{u_{n+1,i+1} - u_{n+1,i-1}}{2 \Delta x} = C_{2}
+    		\end{equation}
+    		
+    		\begin{equation}
+    			u_{n+1,i+1} = 2 C_{2} \Delta x + u_{n+1,i-1}
+    		\end{equation}
+    		
+    		\noindent
+    		Where $i+1 = m$ and $m$ represents the last node (ghost node)
+    		
+    		\begin{equation}
+    			u_{n+1,m} = 2 C_{2} \Delta x + u_{n+1,m-2}
+    		\end{equation}
+    		
+    		\noindent
+    		Plugging in
+
+		\begin{equation}
+			-CFL * u_{n+1,m-2} + (1 + 2 CFL) * u_{n+1,m-1} - CFL * (2 C_{2} \Delta x + u_{n+1,m-2}) = u_{n,m-1} + q_{n,m-1} \Delta t
+		\end{equation}    		
+    		
+    		\boxedeq{}{-2CFL * u_{n+1,m-2} + (1 + 2 CFL) * u_{n+1,m-1} = u_{n,m-1} + q_{n,m-1} \Delta t + 2CFL * C_{2} \Delta x}
+    		
+		\pagebreak
+		
+		\noindent
 		\textbf{Crank-Nicolson}
+		
+		\noindent
+		Let n denote the time step, and i denote the grid point
+		
+		\begin{equation}
+			u_{n+1,i} = u_{n,i} + \Delta t * \Big[ \frac{1}{2} f(t_{n}, u_{n}) + \frac{1}{2} f(t_{n+1}, u_{n+1}) + q_{n} \Big]_{i}
+		\end{equation}
+		
+		\begin{equation}
+			u_{n+1,i} = u_{n,i} + \Delta t * \Big[ \frac{1}{2} \big( K \frac{\partial^{2} u_{n}}{\partial x^{2}} \big) + \frac{1}{2} \big( K \frac{\partial^{2} u_{n+1}}{\partial x^{2}} \big) + q_{n} \Big]_{i}
+		\end{equation}
+		
+		\begin{equation}
+			\begin{split}
+			u_{n+1,i} = u_{n,i} + \Delta t * \Big[ \frac{1}{2} \big( K \frac{u_{n}(x + \Delta x) - 2 u_{n}(x) + u_{n}(x - \Delta x)}{\Delta x^{2}} \big) \\
+			 \frac{1}{2} \big( K \frac{u_{n+1}(x + \Delta x) - 2 u_{n+1}(x) + u_{n+1}(x - \Delta x)}{\Delta x^{2}} \big) + q_{n} \Big]_{i}
+			\end{split}
+		\end{equation}
+		
+		\noindent
+		Where
+		
+		\begin{equation}
+			\begin{split}
+				u_{n}(x + \Delta x) = u_{n,i+1} \\
+				u_{n}(x)            = u_{n,i} \\
+				u_{n}(x - \Delta x) = u_{n,i-1}
+			\end{split}
+		\end{equation}
+		
+		\noindent
+		And
+		
+		\begin{equation}
+			\begin{split}
+				u_{n+1}(x + \Delta x) = u_{n+1,i+1} \\
+				u_{n+1}(x)            = u_{n+1,i} \\
+				u_{n+1}(x - \Delta x) = u_{n+1,i-1}
+			\end{split}
+		\end{equation}
+		
+		\begin{equation}
+			\begin{split}
+			u_{n+1,i} = u_{n,i} + \Delta t * \Big[ \frac{1}{2} \big( K \frac{u_{n,i+1} - 2 u_{n,i} + u_{n,i-1}}{\Delta x^{2}} \big) \\
+			 \frac{1}{2} \big( K \frac{u_{n+1,i+1} - 2 u_{n+1,i} + u_{n+1,i-1}}{\Delta x^{2}} \big) + q_{n,i} \Big]
+			\end{split}
+		\end{equation}
+		
+		\noindent
+		We define the CFL Number to be:
+		
+		\begin{equation}
+			CFL = K \frac{\Delta t}{(\Delta x)^{2}}
+		\end{equation}
+		
+		\boxedeq{}{\frac{-CFL}{2} * u_{n+1,i-1} + (1 + CFL) * u_{n+1, i} - \frac{-CFL}{2} * u_{n+1,i+1} = \\ \frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t}
+		
+		\pagebreak
+		
+		\noindent
+		1) Dirilecht Condition at the Left Boundary x = 0:	\\
+		
+		\begin{equation}
+			u(x=0, t) = u_{n+1, 1} = \begin{cases} 
+          					C_{1} * \frac{t}{t_{ramp}} & t\leq t_{ramp} \\
+          					C_{1}                      & t > t_{ramp}
+       					\end{cases} = f_{BC1}
+    		\end{equation}  		
+
+		\begin{equation}
+			\begin{split}
+			\frac{-CFL}{2} * f_{BC1} + (1 + CFL) * u_{n+1, i} - \frac{-CFL}{2} * u_{n+1,i+1} = \\ 
+			\frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t
+			\end{split}
+		\end{equation}
+		
+		\boxedeq{}{(1 + CFL) * u_{n+1, i} - \frac{CFL}{2} * u_{n+1,i+1} = \\ \frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t + \frac{CFL}{2} * f_{BC1}}    		
+    		
+		\noindent
+		2) Neumann Condition at the Right Boundary x = L: \\
+		
+		\begin{equation}
+			\frac{\partial u}{\partial x}(x=L, t) = C_{2}
+    		\end{equation}
+    		
+    		\noindent
+    		Forward Difference
+    		
+    		\begin{equation}
+    			\frac{u_{n+1,i+1} - u_{n+1,i}}{\Delta x} = C_{2}
+    		\end{equation}
+    		
+    		\begin{equation}
+    			u_{n+1,i+1} = C_{2} \Delta x + u_{n+1,i}
+    		\end{equation}
+    		
+    		\noindent
+    		Where $i+1 = m$ and $m$ represents the last node (ghost node)
+    		
+    		\begin{equation}
+    			u_{n+1,m} = C_{2} \Delta x + u_{n+1,m-1}
+    		\end{equation}
+    		
+    		\noindent
+    		Plugging in
+
+		\begin{equation}
+			\begin{split}
+			\frac{-CFL}{2} * u_{n+1,i-1} + (1 + CFL) * u_{n+1, i} - \frac{CFL}{2} * \big ( C_{2} \Delta x + u_{n+1,i} \big) = \\
+			 \frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t
+			 \end{split}
+		\end{equation} 
+		
+		\boxedeq{}{\frac{-CFL}{2} * u_{n+1,i-1} + (1 + \frac{CFL}{2}) * u_{n+1, i} = \\
+			 \frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t + \frac{CFL}{2} * \big ( C_{2} \Delta x \big)}   		
+    		
+    		\pagebreak
+    		
+    		\noindent
+    		Central Difference
+    		
+    		\begin{equation}
+    			\frac{u_{n+1,i+1} - u_{n+1,i-1}}{2 \Delta x} = C_{2}
+    		\end{equation}
+    		
+    		\begin{equation}
+    			u_{n+1,i+1} = 2 C_{2} \Delta x + u_{n+1,i-1}
+    		\end{equation}
+    		
+    		\noindent
+    		Where $i+1 = m$ and $m$ represents the last node (ghost node)
+    		
+    		\begin{equation}
+    			u_{n+1,m} = 2 C_{2} \Delta x + u_{n+1,m-2}
+    		\end{equation}
+    		
+    		\noindent
+    		Plugging in
+    		
+    		\begin{equation}
+    			\begin{split}
+    			\frac{-CFL}{2} * u_{n+1,i-1} + (1 + CFL) * u_{n+1, i} - \frac{CFL}{2} * \big( 2 C_{2} \Delta x + u_{n+1,i-1} \big) = \\ 
+    			\frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t
+    			\end{split}
+    		\end{equation}
+    		
+    		\boxedeq{}{-CFL * u_{n+1,i-1} + (1 + CFL) * u_{n+1, i} = \\ 
+    			\frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t + \frac{CFL}{2} * \big( 2 C_{2} \Delta x \big)}
+    		
+		\pagebreak
+		
 		\pagebreak	
 	
 	\section{Appendix}
