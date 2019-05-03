@@ -1,0 +1,223 @@
+% Author: Jered Dominguez-Trujillo
+
+\documentclass[10pt, letter, showtrims]{extarticle}
+
+% Packages
+% Packages
+\usepackage[paperwidth=20cm, paperheight=26cm, margin=1in]{geometry}
+\usepackage[letter, frame, center, noinfo]{crop}
+\usepackage{graphicx}
+% \usepackage{showframe}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{color, colortbl}
+\usepackage[labelfont=bf]{caption}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
+\usepackage{esdiff}
+\usepackage{tabularx}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{placeins}
+\usepackage{adjustbox}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+	language=Matlab,
+	aboveskip=3mm,
+	belowskip=3mm,
+	showstringspaces=false,
+	columns=flexible,
+	basicstyle={\footnotesize\ttfamily},
+	numbers=none,
+	numberstyle=\tiny\color{gray},
+	keywordstyle=\color{blue},
+	commentstyle=\color{dkgreen},
+	stringstyle=\color{mauve},
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=3
+}
+
+\usepackage{enumitem}
+\setenumerate[1]{label=\Roman*.}
+\setenumerate[2]{label=\Alph*.}
+\setenumerate[3]{label=\roman*.}
+\setenumerate[4]{label=\alph*.}
+
+\newcommand{\unsure}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
+\newcommand{\change}[2][1=]{\todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
+\newcommand{\info}[2][1=]{\todo[linecolor=OliveGreen,backgroundcolor=OliveGreen!25,bordercolor=OliveGreen,#1]{#2}}
+\newcommand{\improvement}[2][1=]{\todo[linecolor=Plum,backgroundcolor=Plum!25,bordercolor=Plum,#1]{#2}}
+\newcommand{\thiswillnotshow}[2][1=]{\todo[disable,#1]{#2}}
+
+\newcommand{\specialcell}[2][c]{%
+	\begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+
+\definecolor{Gray}{gray}{0.9}
+
+%Commands
+\renewcommand{\headrulewidth}{2pt}
+\renewcommand{\footrulewidth}{1pt}
+
+\newcommand{\University}{Massachusetts Institute of Technology}
+\newcommand{\ClassCode}{18.0851}
+\newcommand{\ClassTitle}{Computational Science and Engineering I}
+\newcommand{\Title}{Project Report}
+\newcommand{\FirstName}{Jered}
+\newcommand{\LastName}{Dominguez-Trujillo}
+\newcommand{\ProfTitle}{Prof.}
+\newcommand{\ProfFirst}{Matthew}
+\newcommand{\ProfLast}{Durey}
+
+% Page Style
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\FirstName{} \LastName{}}
+\lhead{\Title{}}
+\rfoot{Page \thepage}
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\newcommand*{\titleGP}{\begingroup % Create the command for including the title page in the document
+\centering % Center all text
+% \vspace*{\baselineskip} % White space at the top of the page
+
+\textsc{\LARGE \University{}} \\[2\baselineskip] % Editor affiliation
+
+\rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt} % Thick horizontal line
+\rule{\textwidth}{0.4pt}\\[\baselineskip] % Thin horizontal line
+
+{\LARGE \Title{}}\\[0.2\baselineskip] % Title
+
+\rule{\textwidth}{0.4pt}\vspace*{-\baselineskip}\vspace{3.2pt} % Thin horizontal line
+\rule{\textwidth}{1.6pt}\\[\baselineskip] % Thick horizontal line
+
+\scshape % Small caps
+{\large \ClassCode{}} \\[0.5\baselineskip]
+{\large \ClassTitle{}} \\[4\baselineskip]
+
+% \vspace*{\baselineskip} % Whitespace between location/year and editors
+
+Written by \\[0.5\baselineskip]
+{\Large \FirstName{} \LastName{}}\\[2\baselineskip] % Editor list
+% \vspace*{2\baselineskip}
+Submitted to: \\[0.5\baselineskip]
+{\Large \ProfTitle{} \ProfFirst{} \ProfLast{}\par} % Editor list
+\vspace*{16\baselineskip}
+{\large \today}\par 
+\vfill % Whitespace between editor names and publisher logo
+
+\endgroup}
+
+\begin{document} 
+	\begin{titlepage}
+		\titleGP{}
+	\end{titlepage}
+
+	\section{Problem Description}
+
+		\noindent
+		\textbf{One-Dimensional Heat Equation}
+		
+		\begin{equation}
+			\frac{\partial u}{\partial t} = K \frac{\partial^{2} u}{\partial x^{2}} + q(x, t)
+		\end{equation}
+
+		\noindent
+		\textbf{Assumptions}
+	
+		\noindent
+		1. Uniform Grid Spacing ($\Delta x$) \\
+		2. Uniform Time Steps   ($\Delta t$) \\	
+
+		\noindent
+		\textbf{Variables}
+		
+		\noindent
+		Length of Domain: $L = 2*\pi$	\\
+		Left Boundary Condition: $C_{1} = 1$ \\
+		Right Boundary Condition: $C_{2} = -0.2$ \\
+		Thermal Diffusivity: $K = 0.1$ \\
+	
+		\noindent
+		\textbf{Boundary Conditions}
+
+		\noindent
+		Dirilecht Condition at the Left Boundary x = 0:
+	
+		\begin{equation}
+			u(x=0, t) = \begin{cases} 
+          					C_{1} * \frac{t}{t_{ramp}} & t\leq t_{ramp} \\
+          					C_{1}                      & t > t_{ramp}
+       					\end{cases}
+    		\end{equation}
+    
+    		\noindent
+    		Neumann Condition at the Right Boundary x = L:
+    
+    		\begin{equation}
+			\frac{\partial u}{\partial x}(x=L, t) = C_{2}
+    		\end{equation}		
+
+		\noindent
+		\textbf{Heating Source Function}
+		
+		\begin{equation}
+			q(x, t) = 0
+		\end{equation}
+		
+		\begin{equation}
+			q(x, t) = -sin(\omega t) * exp\left(\frac{-(x - \frac{L}{2})^{2}}{\sigma^{2}}\right)
+		\end{equation}	
+	
+		\noindent
+		\textbf{Second Order Finite Difference}
+		
+		\noindent
+		At time t, where $u^{(n)} = \frac{\partial^{n} u}{\partial x^{n}}$  \\ \\
+		Taylor Expansions:
+		
+		\begin{equation}
+			u(x + \Delta x) = u(x) + \Delta x u^{(1)}(x) + \frac{1}{2} (\Delta x)^{2} u^{(2)}(x) + \frac{1}{6} (\Delta x)^{3} u^{(3)}(x) + O(h^{4})
+		\end{equation}	
+		
+		\begin{equation}
+			u(x - \Delta x) = u(x) - \Delta x u^{(1)}(x) + \frac{1}{2} (\Delta x)^{2} u^{(2)}(x) - \frac{1}{6} (\Delta x)^{3} u^{(3)}(x) + O(h^{4})
+		\end{equation}
+		
+		\begin{equation}
+			u(x + \Delta x) + u(x - \Delta x) = 2u(x) + (\Delta x)^{2} u^{(2)}(x) + O(h^{4})
+		\end{equation}	
+		
+		\noindent
+		Quadratic Convergence
+		
+		\begin{equation}
+			u^{(2)}(x) = \frac{u(x + \Delta x) - 2 u(x) + u(x - \Delta x)}{(\Delta x)^{2}} + O(h^{2})
+		\end{equation}	
+		
+		\pagebreak
+		
+		\noindent
+		\textbf{Explicit Euler}
+	
+		\textbf{Implicit Euler}
+	
+		\textbf{Crank-Nicolson}
+		\pagebreak	
+	
+	\section{Appendix}
+	
+	\centerline{\textit{MATLAB Code for Numerical Solution of Heat Equation}}
+	\lstinputlisting[label=lst:p1, caption=Numerical Heat Equation, breaklines]{NumHT.m}
+	
+\end{document}
