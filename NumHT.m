@@ -22,7 +22,7 @@ function NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGMA, Q
         QMAX = 1;                           % Default Maximum Value of Heat Source Function
         
         if nargin <= 11
-            SIGMA = 0.2 * LENGTH;           % Default Standard Deviation of Heat Source Function
+            SIGMA = 0.2 .* LENGTH;           % Default Standard Deviation of Heat Source Function
         end
         
         if nargin <= 10
@@ -32,13 +32,13 @@ function NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGMA, Q
     
     % Spatial Domain
     NODES = NX;                             % Nodes
-    DX = LENGTH / NODES;                    % DX Calculation
+    DX = LENGTH ./ NODES;                    % DX Calculation
     X = linspace(0, LENGTH + DX, NODES + 2);% X Vector with Ghost Node
     
     % Time Domain
     TMAX = TM;                              % End Time of Simulation
-    DT = TMAX / NT;                         % DT Calculation
-    TIMESTEPS = TMAX / DT + 1;              % Number of Time Steps
+    DT = TMAX ./ NT;                         % DT Calculation
+    TIMESTEPS = TMAX ./ DT + 1;              % Number of Time Steps
     T = linspace(0, TMAX, TIMESTEPS);       % Time Vector
     
     % Calculate CFL Number     
@@ -112,8 +112,8 @@ function NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGMA, Q
             end
 
             % Boundary Conditions
-            U(n + 1, 1) = C1 * (CURRENT_T / TIME_RAMP) * (CURRENT_T <= TIME_RAMP) + C1 * (CURRENT_T > TIME_RAMP);
-            U(n + 1, NODES + 2) = U(n + 1, NODES) + 2 * DX * C2;
+            U(n + 1, 1) = C1 .* (CURRENT_T / TIME_RAMP) .* (CURRENT_T <= TIME_RAMP) + C1 .* (CURRENT_T > TIME_RAMP);
+            U(n + 1, NODES + 2) = U(n + 1, NODES) + 2 .* DX .* C2;
 
             % Plot New Temperature Profile
             figure(fTemperature);
@@ -122,7 +122,7 @@ function NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGMA, Q
             subplot(211);
             plot(X, U(n + 1, :), 'o-');
             xlabel('X', 'FontSize', 18); ylabel('T', 'Fontsize', 18);
-            axis([0 L -2 2]);
+            axis([0 L -1.5 1.5]);
 
             % Heat Source Profile
             subplot(212);
@@ -149,11 +149,11 @@ function NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGMA, Q
         
         for ii = 2:NODES
             LOWER(ii) = -CFL;
-            DIAG(ii) = 2 * CFL + 1;
+            DIAG(ii) = 2 .* CFL + 1;
             UPPER(ii) = -CFL;
         end
         
-        DIAG(NODES + 1) = 2 * CFL + 1;
+        DIAG(NODES + 1) = 2 .* CFL + 1;
         
         % Iterate Until TMAX
         while CURRENT_T < TMAX
@@ -170,7 +170,7 @@ function NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGMA, Q
             end
             
             % Boundary Conditions
-            fBC1 = C1 * (CURRENT_T / TIME_RAMP) * (CURRENT_T <= TIME_RAMP) + C1 * (CURRENT_T > TIME_RAMP);
+            fBC1 = C1 .* (CURRENT_T / TIME_RAMP) .* (CURRENT_T <= TIME_RAMP) + C1 .* (CURRENT_T > TIME_RAMP);
             LOWER(1) = 0; 
             RHS(1) = fBC1;
             RHS(2) = RHS(2) + CFL .* fBC1;
@@ -180,7 +180,7 @@ function NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGMA, Q
             % RHS(NODES + 1) = RHS(NODES + 1) + C2 .* CFL .* DX;
             
             % Central Difference Scheme
-            L(NODES) = -2 * CFL;
+            L(NODES) = -2 .* CFL;
             RHS(NODES + 1) = RHS(NODES + 1) + 2 .* C2 .* CFL .* DX;
             
             MA = sparse([LOWERI, DIAGI, UPPERI], [LOWERJ, DIAGJ, UPPERJ], [LOWER, DIAG, UPPER], NODES + 1, NODES + 1);
@@ -200,7 +200,7 @@ function NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGMA, Q
             subplot(211);
             plot(X, U(n + 1, :), 'o-');
             xlabel('X', 'FontSize', 18); ylabel('T', 'Fontsize', 18);
-            axis([0 LENGTH -0.5 1.5]);
+            axis([0 LENGTH -1.5 1.5]);
 
             % Heat Source Profile
             subplot(212);
@@ -248,7 +248,7 @@ function NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGMA, Q
             end
             
             % Boundary Conditions
-            fBC1 = C1 * (CURRENT_T / TIME_RAMP) * (CURRENT_T <= TIME_RAMP) + C1 * (CURRENT_T > TIME_RAMP);
+            fBC1 = C1 .* (CURRENT_T / TIME_RAMP) .* (CURRENT_T <= TIME_RAMP) + C1 .* (CURRENT_T > TIME_RAMP);
             LOWER(1) = 0; 
             RHS(1) = fBC1;
             RHS(2) = RHS(2) + CFL .* fBC1 ./ 2;
@@ -278,7 +278,7 @@ function NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGMA, Q
             subplot(211);
             plot(X, U(n + 1, :), 'o-');
             xlabel('X', 'FontSize', 18); ylabel('T', 'Fontsize', 18);
-            axis([0 LENGTH -0.5 1.5]);
+            axis([0 LENGTH -1.5 1.5]);
 
             % Heat Source Profile
             subplot(212);
