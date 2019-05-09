@@ -131,33 +131,40 @@ Submitted to: \\[0.5\baselineskip]
 	\section{Problem Description}
 
 		\noindent
+		Three numerical methods - Explicit Euler, Implicit Euler, and Crank-Nicolson - were developed to solve the one-dimensional heat equation and analyzed with respect to their stabilities and respective errors. As this is an analysis of numerical methods rather than an engineering solution, all values will be presented as dimensionless. \\
+		
+		\noindent
 		\textbf{One-Dimensional Heat Equation}
 		
+		\noindent
+		To correctly simulate unsteady heat transfer in one-dimension numerically, the one-dimensional Heat Equation (Eq. \ref{eq:heat}) must be discretized and solved.
+		
 		\begin{equation}
+			\label{eq:heat}
 			\frac{\partial u}{\partial t} = K \frac{\partial^{2} u}{\partial x^{2}} + q(x, t)
 		\end{equation}
 
 		\noindent
+		Where $u$ represents the temperature, $K$ the thermal diffusivity, and $q(x,t)$ a heat source function. The variables $x$ and $t$ represent space and time, respectively.\\		
+		
+		\noindent
 		\textbf{Assumptions}
 	
+		\noindent
+		To simplify the numerical methods, the following assumptions were made:
+		
 		\noindent
 		1. Uniform Grid Spacing ($\Delta x$) \\
 		2. Uniform Time Steps   ($\Delta t$) \\	
 
 		\noindent
-		\textbf{Variables}
-		
-		\noindent
-		Length of Domain: $L = 2*\pi$	\\
-		Left Boundary Condition: $C_{1} = 1$ \\
-		Right Boundary Condition: $C_{2} = -0.2$ \\
-		Thermal Diffusivity: $K = 0.1$ \\
-		Time Ramp: $t_{ramp} = 1$ \\
-
-		\noindent
 		\textbf{Initial Conditions}
 		
+		\noindent
+		The initial condition will be assumed that the temperature field, $u(x, t = 0)$, is zero at all points in the domain, per Eq. \ref{eq:init}.
+		
 		\begin{equation}
+		\label{eq:init}
 			u(x, t = 0) = 0
 		\end{equation}	
 	
@@ -165,9 +172,13 @@ Submitted to: \\[0.5\baselineskip]
 		\textbf{Boundary Conditions}
 
 		\noindent
+		The boundary conditions were defined as "fixed-free" with the fixed (Dirilecht) boundary condition applied at $x = 0$ and the free (Neumann) boundary condiiton applied at $x = L$ per Eq. \ref{eq:bc1} and Eq. \ref{eq:bc2}, respectively. \\
+		
+		\noindent
 		Dirilecht Condition at the Left Boundary x = 0:
 	
 		\begin{equation}
+		\label{eq:bc1}
 			u(x=0, t) = \begin{cases} 
           					C_{1} * \frac{t}{t_{ramp}} & t\leq t_{ramp} \\
           					C_{1}                      & t > t_{ramp}
@@ -178,6 +189,7 @@ Submitted to: \\[0.5\baselineskip]
     		Neumann Condition at the Right Boundary x = L:
     
     		\begin{equation}
+    		\label{eq:bc2}
 			\frac{\partial u}{\partial x}(x=L, t) = C_{2}
     		\end{equation}		
 
@@ -188,44 +200,141 @@ Submitted to: \\[0.5\baselineskip]
 %			q(x, t) = 0
 %		\end{equation}
 		
-		\begin{equation}
-			q(x, t) = -sin(\omega t) * exp\left(\frac{-(x - \frac{L}{2})^{2}}{\sigma^{2}}\right)
-		\end{equation}	
-	
 		\noindent
-		\textbf{Second Order Finite Difference}
-		
-		\noindent
-		At time t, where $u^{(n)} = \frac{\partial^{n} u}{\partial x^{n}}$  \\ \\
-		Taylor Expansions:
+		The source function, ($q(x, t)$ in Eq. \ref{eq:heat}) is defined as sinusoidal in time, with frequency set by $\omega$ and amplitude set by $Q_{max}$, and by a normal distribution in space, with a peak at $\frac{L}{2}$ (analog to the mean in a normal distribution) and standard deviation, $\sigma$, per Eq. \ref{eq:hsource}.		
 		
 		\begin{equation}
-			u(x + \Delta x) = u(x) + \Delta x u^{(1)}(x) + \frac{1}{2} (\Delta x)^{2} u^{(2)}(x) + \frac{1}{6} (\Delta x)^{3} u^{(3)}(x) + O(h^{4})
-		\end{equation}	
-		
-		\begin{equation}
-			u(x - \Delta x) = u(x) - \Delta x u^{(1)}(x) + \frac{1}{2} (\Delta x)^{2} u^{(2)}(x) - \frac{1}{6} (\Delta x)^{3} u^{(3)}(x) + O(h^{4})
-		\end{equation}
-		
-		\begin{equation}
-			u(x + \Delta x) + u(x - \Delta x) = 2u(x) + (\Delta x)^{2} u^{(2)}(x) + O(h^{4})
-		\end{equation}	
-		
-		\begin{equation}
-			u^{(2)}(x) = \frac{u(x + \Delta x) - 2 u(x) + u(x - \Delta x)}{(\Delta x)^{2}} + O(h^{2})
+		\label{eq:hsource}
+			q(x, t) = - Q_{max} * sin(\omega t) * exp\left(\frac{-(x - \frac{L}{2})^{2}}{\sigma^{2}}\right)
 		\end{equation}	
 		
 		\pagebreak
 		
 		\noindent
-		\textbf{Explicit Euler}
-
+		\textbf{Parameters}
+		
 		\noindent
-		Let $n$ denote the time step, and $i$ denote the grid point
+		The Heat Equation (Eq. \ref{eq:heat}) was solved on a domain of length $L = 2*\pi$, with a Thermal Diffusivity constant of $K = 0.1$. \\
+		
+		\noindent
+		The Dirilecht Boundary Condition on the left ($x = 0$) was set by the constant $C_{1} = 1$, and was increased linearly from the initial condition $u(x = 0, t = 0) = 0$ to $C_{1}$ over a specified time as $t_{ramp} = 1$. This resulted in the boundary condition described by Eq. \ref{eq:bc1}. \\
+		
+		\noindent
+		The Nuemann Boundary Condition ($\frac{\partial u}{\partial x}$) on the right ($x = L$) was set by the constant  $C_{2} = -0.2$. This resulted in the boundary condition described by Eq. \ref{eq:bc2}. \\
+		
+		\noindent
+		The source function (Eq. \ref{eq:hsource}) is defined to have a maximum amplitude of $Q_{max} = 1$, a frequency of $\omega = q \frac{rad}{s}$ and a distribution (standard deviation) of $sigma = 0.2 * L$. \\		
+		
+		\noindent
+		A table summarizing important parameters used is presented below. \\
+		
+		\begin{table}[h]
+			\caption{Heat Equation Parameters and Boundary Conditions}
+			\centering
+			\begin{tabular}{|c|c|}
+				\hline
+				Length of Domain [$L$] & $2\pi$ \\
+				\hline
+				Left Boundary Condition [$C_{1}$] & $1$ \\
+				\hline
+				Right Boundary Condition [$C_{2}$] & $-0.2$ \\
+				\hline
+				Thermal Diffusivity [$K$] & $0.1$ \\
+				\hline
+				Time Ramp [$t_{ramp}$] & $1$ \\
+				\hline
+				Maximum Heat Source [$Q_{max}$] & $1$ \\
+				\hline
+				Frequency [$\omega$] & $1 \frac{rad}{s}$ \\
+				\hline
+				Distribution of Heat Source [$\sigma$] & $0.2 * L$ \\
+				\hline
+			\end{tabular}
+		\end{table}
+	
+		\section{Finite Difference Schemes}
+		
+		\noindent
+		For Eq. \ref{eq:cds} and Eq. \ref{eq:fd2}, at time t, we define the following $u^{(n)} = \frac{\partial^{n} u}{\partial x^{n}}$  \\
+		
+		\noindent
+		\textbf{First-Order Finite Difference: Central Difference Scheme}
+		
+		\noindent
+		The Central Difference Scheme for First-Order Finite Differences is used to apply the Nuemann boundary condition (Eq. \ref{eq:bc2}) using a ghost node located at $L + dx$. The scheme is defined as per Eq. \ref{eq:cds}
+		
+%		\noindent
+%		Taylor Expansions
+%		
+%		\begin{equation}
+%		\label{eq:fd1}
+%			u(x + \Delta x) = u(x) + \Delta x u^{(1)}(x) + \frac{1}{2} (\Delta x)^{2} u^{(2)}(x) + O(\Delta x^{3})
+%		\end{equation}
+%		
+%		\begin{equation}
+%			u(x - \Delta x) = u(x) - \Delta x u^{(1)}(x) + \frac{1}{2} (\Delta x)^{2} u^{(2)}(x) + O(\Delta x ^{3})
+%		\end{equation}
+%		
+%		\noindent
+%		Subtract
+%		
+%		\begin{equation}
+%			u(x + \Delta x) - u(x - \Delta x) = 2 \Delta x u^{(1)}(x) + O(\Delta x^{3})
+%		\end{equation}
 		
 		\begin{equation}
-			u_{n+1,i} - u_{n,\i} = \int_{t_{n}}^{t_{n+1}} f(t, u(t)) dt = \Delta t * f(t_{n}, u_{n}) = \Delta t \big[ K \frac{\partial^{2} u_{n}}{\partial x^{2}} + q_{n}(x) \big]_{i}
+		\label{eq:cds}
+			u^{(1)} = \frac{u(x + \Delta x) - u(x - \Delta x)}{2 \Delta x} + O(\Delta x^{2})
+		\end{equation}
+		
+		\noindent
+		\textbf{Second Order Finite Difference}
+		
+		\noindent
+		The Second-Order Finite Difference Scheme is used to discretize the spatial term $\frac{\partial^{2}u}{\partial x}$ for use in the Explicit Euler, Implicit Euler, and Crank-Nicolson solvers. The scheme is defined as per Eq. \ref{eq:fd2}.
+		
+%		\noindent
+%		Taylor Expansions
+%		
+%		\begin{equation}
+%			u(x + \Delta x) = u(x) + \Delta x u^{(1)}(x) + \frac{1}{2} (\Delta x)^{2} u^{(2)}(x) + \frac{1}{6} (\Delta x)^{3} u^{(3)}(x) + O(\Delta x^{4})
+%		\end{equation}	
+%		
+%		\begin{equation}
+%			u(x - \Delta x) = u(x) - \Delta x u^{(1)}(x) + \frac{1}{2} (\Delta x)^{2} u^{(2)}(x) - \frac{1}{6} (\Delta x)^{3} u^{(3)}(x) + O(\Delta x^{4})
+%		\end{equation}
+%		
+%		\begin{equation}
+%			u(x + \Delta x) + u(x - \Delta x) = 2u(x) + (\Delta x)^{2} u^{(2)}(x) + O(\Delta x^{4})
+%		\end{equation}	
+		
+		\begin{equation}
+		\label{eq:fd2}
+			u^{(2)}(x) = \frac{u(x + \Delta x) - 2 u(x) + u(x - \Delta x)}{(\Delta x)^{2}} + O(\Delta x^{2})
 		\end{equation}	
+		
+		\pagebreak
+		
+		\noindent
+		\section{Explicit Euler}
+
+		\noindent
+		The Explicit Euler scheme is defined as the following, where we let $n$ denote the time step, and $i$ denote the grid point:
+		
+		\begin{equation}
+		\label{eq:explicit}
+			\frac{u_{n+1} - u_{n}}{\Delta t} = f(t_{n}, u_{n})
+		\end{equation}
+		
+		\noindent
+		Where the temperature across the domain at the next time step is calculated directly from the temperature field across the domain at the current time step. \\
+		
+		\noindent
+		Expanding Eq. \ref{eq:explicit}, where $f(t_{n}, u_{n})$ is given by the one-dimensional heat equation (Eq. \ref{eq:heat}) gives:
+		
+%		\begin{equation}
+%			u_{n+1,i} - u_{n,i} = \int_{t_{n}}^{t_{n+1}} f(t, u(t)) dt = \Delta t * f(t_{n}, u_{n}) = \Delta t \big[ K \frac{\partial^{2} u_{n}}{\partial x^{2}} + q_{n}(x) \big]_{i}
+%		\end{equation}	
 		
 		\begin{equation}
 			u_{n+1,i} - u_{n,\i} = \Delta t \big[ K \big(\frac{u_{n}(x + \Delta x) - 2 u_{n}(x) + u_{n}(x - \Delta x)}{(\Delta x)^{2}}\big) + q_{n}(x) \big]_{i}
@@ -235,6 +344,7 @@ Submitted to: \\[0.5\baselineskip]
 		Where
 		
 		\begin{equation}
+		\label{eq:delta}
 			\begin{split}
 				u_{n}(x + \Delta x) = u_{n,i+1} \\
 				u_{n}(x)            = u_{n,i} \\
@@ -242,70 +352,85 @@ Submitted to: \\[0.5\baselineskip]
 			\end{split}
 		\end{equation}
 		
-		\begin{equation}
-			u_{n+1,i} - u_{n,i} = \Delta t \big[ K \big(\frac{u_{n,i+1} - 2 u_{n,i} + u_{n,\i-1}}{(\Delta x)^{2}}\big) + q_{n,i}(x) \big]
-		\end{equation}
+%		\begin{equation}
+%			u_{n+1,i} - u_{n,i} = \Delta t \big[ K \big(\frac{u_{n,i+1} - 2 u_{n,i} + u_{n,\i-1}}{(\Delta x)^{2}}\big) + q_{n,i}(x) \big]
+%		\end{equation}
+%		
+%		\begin{equation}
+%			u_{n+1,i} = u_{n,i} + \Delta t \big[ K \big(\frac{u_{n,i+1} - 2 u_{n,i} + u_{n,\i-1}}{(\Delta x)^{2}}\big) + q_{n,i}(x) \big]
+%		\end{equation}
+		
+		\noindent
+		And we define the CFL Number to be:
 		
 		\begin{equation}
-			u_{n+1,i} = u_{n,i} + \Delta t \big[ K \big(\frac{u_{n,i+1} - 2 u_{n,i} + u_{n,\i-1}}{(\Delta x)^{2}}\big) + q_{n,i}(x) \big]
+		\label{eq:cfl}
+			CFL = K \frac{\Delta t}{(\Delta x)^{2}}
 		\end{equation}
 		
 		\noindent
-		We define the CFL Number to be:
+		This gives the \textbf{explicit} final numerical solution (Eq. \ref{eq:explicits}) for the temperature field at the next ($n + 1$) timestep, given the tempreature field at the current ($n$) timestep.
 		
-		\begin{equation}
-			CFL = K \frac{\Delta t}{(\Delta x)^{2}}
-		\end{equation}
-	
-		\boxedeq{}{u_{n+1,i} = CFL * u_{n,i+1} + (1 - 2 CFL) * u_{n,i} + CFL * u_{n,i-1} + q_{n,i} \Delta t}
+		\boxedeq{eq:explicits}{u_{n+1,i} = CFL * u_{n,i+1} + (1 - 2 CFL) * u_{n,i} + CFL * u_{n,i-1} + q_{n,i} \Delta t}
 		
 		\pagebreak
 		
 		\noindent
-		\textbf{Implicit Euler}
+		\section{Implicit Euler}
 		
 		\noindent
-		Let n denote the time step, and i denote the grid point
+		The Implicit Euler scheme is defined as the following, where we let $n$ denote the time step, and $i$ denote the grid point:
 		
 		\begin{equation}
-			u_{n+1,i} = u_{n,i} + \Delta t * f(t_{n+1}, u_{n+1}) = u_{n,i} + \Delta t \big[ K \frac{\partial^{2} u_{n+1}}{\partial x^{2}} + q_{n}(x)\big]_{i}
+		\label{eq:implicit}
+			u_{n+1} = u_{n} + \Delta t * f(t_{n+1}, u_{n+1})
 		\end{equation}
+		
+		\noindent
+		Unlike the Explicit Euler scheme, the Implicit Euler scheme requires the simultaneous solution of all points in the domain for the next time step. \\
+		
+		\noindent
+		Expanding Eq. \ref{eq:implicit} gives:
+		
+%		\begin{equation}
+%			u_{n+1,i} = u_{n,i} + \Delta t * f(t_{n+1}, u_{n+1}) = u_{n,i} + \Delta t \big[ K \frac{\partial^{2} u_{n+1}}{\partial x^{2}} + q_{n}(x)\big]_{i}
+%		\end{equation}
 		
 		\begin{equation}
 			u_{n+1,i} = u_{n,i} + \Delta t \big[ K \big(\frac{u_{n+1}(x + \Delta x) - 2 u_{n+1} (x) + u_{n+1} (x - \Delta x)}{\Delta x^{2}} \big) + q_{n}(x)\big]_{i}
 		\end{equation}
 	
 		\noindent
-		Where
+		Note that Eq. \ref{eq:delta} still applies to Eq. \ref{eq:implicit} and we still define the CFL number as in Eq. \ref{eq:cfl}. After some algebra, we get the following equation (Eq. \ref{eq:implicit2}) for the Implicit Euler Scheme.
 		
-		\begin{equation}
-			\begin{split}
-				u_{n+1}(x + \Delta x) = u_{n+1,i+1} \\
-				u_{n+1}(x)            = u_{n+1,i} \\
-				u_{n+1}(x - \Delta x) = u_{n+1,i-1}
-			\end{split}
-		\end{equation}
+%		\begin{equation}
+%			\begin{split}
+%				u_{n+1}(x + \Delta x) = u_{n+1,i+1} \\
+%				u_{n+1}(x)            = u_{n+1,i} \\
+%				u_{n+1}(x - \Delta x) = u_{n+1,i-1}
+%			\end{split}
+%		\end{equation}
+%		
+%		\begin{equation}
+%			u_{n+1,i} = u_{n,i} + \Delta t \big[ K \big(\frac{u_{n+1,i+1} - 2 u_{n+1,i} + u_{n+1,i-1}}{\Delta x^{2}} \big) + q_{n,i}(x)\big]
+%		\end{equation}
+%		
+%		\begin{equation}
+%			u_{n+1,i} - \Delta t \big[ K \big(\frac{u_{n+1,i+1} - 2 u_{n+1,i} + u_{n+1,i-1}}{\Delta x^{2}} \big)\big] =  u_{n,i} + q_{n,i}(x)
+%		\end{equation}
+%		
+%		\begin{equation}
+%			u_{n+1,i} - \frac{K \Delta t}{(\Delta x)^{2}} \big[ u_{n+1,i+1} - 2 u_{n+1,i} + u_{n+1,i-1} \big] =  u_{n,i} + q_{n,i}(x)
+%		\end{equation}
+%		
+%		\noindent
+%		We define the CFL Number to be:
+%		
+%		\begin{equation}
+%			CFL = K \frac{\Delta t}{(\Delta x)^{2}}
+%		\end{equation}
 		
-		\begin{equation}
-			u_{n+1,i} = u_{n,i} + \Delta t \big[ K \big(\frac{u_{n+1,i+1} - 2 u_{n+1,i} + u_{n+1,i-1}}{\Delta x^{2}} \big) + q_{n,i}(x)\big]
-		\end{equation}
-		
-		\begin{equation}
-			u_{n+1,i} - \Delta t \big[ K \big(\frac{u_{n+1,i+1} - 2 u_{n+1,i} + u_{n+1,i-1}}{\Delta x^{2}} \big)\big] =  u_{n,i} + q_{n,i}(x)
-		\end{equation}
-		
-		\begin{equation}
-			u_{n+1,i} - \frac{K \Delta t}{(\Delta x)^{2}} \big[ u_{n+1,i+1} - 2 u_{n+1,i} + u_{n+1,i-1} \big] =  u_{n,i} + q_{n,i}(x)
-		\end{equation}
-		
-		\noindent
-		We define the CFL Number to be:
-		
-		\begin{equation}
-			CFL = K \frac{\Delta t}{(\Delta x)^{2}}
-		\end{equation}
-		
-		\boxedeq{}{-CFL * u_{n+1,i+1} + (2 CFL + 1) * u_{n+1,i} - CFL * u_{n+1,i-1} = u_{n,i} + q_{n,i} \Delta t}
+		\boxedeq{eq:implicit2}{-CFL * u_{n+1,i+1} + (2 CFL + 1) * u_{n+1,i} - CFL * u_{n+1,i-1} = u_{n,i} + q_{n,i} \Delta t}
 		
 		\noindent
 		\textbf{Boundary Conditions} \\
@@ -326,49 +451,47 @@ Submitted to: \\[0.5\baselineskip]
 		
 		\boxedeq{}{(2CFL + 1) * u_{n+1,2} - CFL * u_{n+1,3} = u_{n,2} + q_{n,2}\Delta t + CFL * f_{BC1}} 
 		
-		\pagebreak
-		
 		\noindent
 		2) Neumann Condition at the Right Boundary x = L: \\
 		
 		\begin{equation}
 			\frac{\partial u}{\partial x}(x=L, t) = C_{2}
     		\end{equation}
-    		
-    		\noindent
-    		Forward Difference
-    		
-    		\begin{equation}
-    			\frac{u_{n+1,i+1} - u_{n+1,i}}{\Delta x} = C_{2}
-    		\end{equation}
-    		
-    		\begin{equation}
-    			u_{n+1,i+1} = C_{2} \Delta x + u_{n+1,i}
-    		\end{equation}
-    		
-    		\noindent
-    		Where $i+1 = m$ and $m$ represents the last node (ghost node)
-    		
-    		\begin{equation}
-    			u_{n+1,m} = C_{2} \Delta x + u_{n+1,m-1}
-    		\end{equation}
-    		
-    		\noindent
-    		Plugging in
-    		
-    		\begin{equation}
-    			-CFL * u_{n+1,m-2} + (1 + 2CFL) * u_{n+1,m-1} - CFL * u_{n+1,m} = u_{n,m-1} + q_{n,m-1} \Delta t
-    		\end{equation}
-    		
-    		\begin{equation}
-    			-CFL * u_{n+1,m-2} + (1 + 2CFL) * u_{n+1,m-1} - CFL * \big(C_{2} \Delta x + u_{n+1,m-1} \big) = u_{n,m-1} + q_{n,m-1} \Delta t
-    		\end{equation}
-    		
-    		\begin{equation}
-    			-CFL * u_{n+1,m-2} + (1 + CFL) * u_{n+1,m-1} - CFL * C_{2} \Delta x  = u_{n,m-1} + q_{n,m-1} \Delta t
-    		\end{equation}
-    		
-    		\boxedeq{}{-CFL * u_{n+1,m-2} + (1 + CFL) * u_{n+1,m-1} = u_{n,m-1} + q_{n,m-1} \Delta t + CFL * C_{2} \Delta x}
+%    		
+%    		\noindent
+%    		Forward Difference
+%    		
+%    		\begin{equation}
+%    			\frac{u_{n+1,i+1} - u_{n+1,i}}{\Delta x} = C_{2}
+%    		\end{equation}
+%    		
+%    		\begin{equation}
+%    			u_{n+1,i+1} = C_{2} \Delta x + u_{n+1,i}
+%    		\end{equation}
+%    		
+%    		\noindent
+%    		Where $i+1 = m$ and $m$ represents the last node (ghost node)
+%    		
+%    		\begin{equation}
+%    			u_{n+1,m} = C_{2} \Delta x + u_{n+1,m-1}
+%    		\end{equation}
+%    		
+%    		\noindent
+%    		Plugging in
+%    		
+%    		\begin{equation}
+%    			-CFL * u_{n+1,m-2} + (1 + 2CFL) * u_{n+1,m-1} - CFL * u_{n+1,m} = u_{n,m-1} + q_{n,m-1} \Delta t
+%    		\end{equation}
+%    		
+%    		\begin{equation}
+%    			-CFL * u_{n+1,m-2} + (1 + 2CFL) * u_{n+1,m-1} - CFL * \big(C_{2} \Delta x + u_{n+1,m-1} \big) = u_{n,m-1} + q_{n,m-1} \Delta t
+%    		\end{equation}
+%    		
+%    		\begin{equation}
+%    			-CFL * u_{n+1,m-2} + (1 + CFL) * u_{n+1,m-1} - CFL * C_{2} \Delta x  = u_{n,m-1} + q_{n,m-1} \Delta t
+%    		\end{equation}
+%    		
+%    		\boxedeq{}{-CFL * u_{n+1,m-2} + (1 + CFL) * u_{n+1,m-1} = u_{n,m-1} + q_{n,m-1} \Delta t + CFL * C_{2} \Delta x}
     		
     		\noindent
     		Central Difference
@@ -400,41 +523,49 @@ Submitted to: \\[0.5\baselineskip]
 		\pagebreak
 		
 		\noindent
-		\textbf{Crank-Nicolson}
+		\section{Crank-Nicolson}
 		
 		\noindent
-		Let n denote the time step, and i denote the grid point
+		The Crank-Nicolson scheme is defined as the following, where we let n denote the time step, and i denote the grid point
 		
 		\begin{equation}
 			u_{n+1,i} = u_{n,i} + \Delta t * \Big[ \frac{1}{2} f(t_{n}, u_{n}) + \frac{1}{2} f(t_{n+1}, u_{n+1}) + q_{n} \Big]_{i}
 		\end{equation}
 		
+		\noindent
+		Substituting in the heat equation (Eq. \ref{eq:heat}),
+		
 		\begin{equation}
 			u_{n+1,i} = u_{n,i} + \Delta t * \Big[ \frac{1}{2} \big( K \frac{\partial^{2} u_{n}}{\partial x^{2}} \big) + \frac{1}{2} \big( K \frac{\partial^{2} u_{n+1}}{\partial x^{2}} \big) + q_{n} \Big]_{i}
 		\end{equation}
 		
+		\noindent
+		And then discretizing,
+		
 		\begin{equation}
+		\label{eq:cn}
 			\begin{split}
 			u_{n+1,i} = u_{n,i} + \Delta t * \Big[ \frac{1}{2} \big( K \frac{u_{n}(x + \Delta x) - 2 u_{n}(x) + u_{n}(x - \Delta x)}{\Delta x^{2}} \big) \\
 			 \frac{1}{2} \big( K \frac{u_{n+1}(x + \Delta x) - 2 u_{n+1}(x) + u_{n+1}(x - \Delta x)}{\Delta x^{2}} \big) + q_{n} \Big]_{i}
 			\end{split}
 		\end{equation}
 		
+%		\noindent
+%		Where
+%		
+%		\begin{equation}
+%			\begin{split}
+%				u_{n}(x + \Delta x) = u_{n,i+1} \\
+%				u_{n}(x)            = u_{n,i} \\
+%				u_{n}(x - \Delta x) = u_{n,i-1}
+%			\end{split}
+%		\end{equation}
+		
 		\noindent
-		Where
+		In addition to Eq. \ref{eq:delta}, the following (Eq. \ref{eq:delta2} are applied to Eq. \ref{eq:cn}.
 		
 		\begin{equation}
-			\begin{split}
-				u_{n}(x + \Delta x) = u_{n,i+1} \\
-				u_{n}(x)            = u_{n,i} \\
-				u_{n}(x - \Delta x) = u_{n,i-1}
-			\end{split}
-		\end{equation}
-		
-		\noindent
-		And
-		
-		\begin{equation}
+		\label{eq:delta2}
 			\begin{split}
 				u_{n+1}(x + \Delta x) = u_{n+1,i+1} \\
 				u_{n+1}(x)            = u_{n+1,i} \\
@@ -442,23 +573,25 @@ Submitted to: \\[0.5\baselineskip]
 			\end{split}
 		\end{equation}
 		
-		\begin{equation}
-			\begin{split}
-			u_{n+1,i} = u_{n,i} + \Delta t * \Big[ \frac{1}{2} \big( K \frac{u_{n,i+1} - 2 u_{n,i} + u_{n,i-1}}{\Delta x^{2}} \big) \\
-			 \frac{1}{2} \big( K \frac{u_{n+1,i+1} - 2 u_{n+1,i} + u_{n+1,i-1}}{\Delta x^{2}} \big) + q_{n,i} \Big]
-			\end{split}
-		\end{equation}
-		
 		\noindent
-		We define the CFL Number to be:
+		We still define the CFL number as in Eq. \ref{eq:cfl}. After some algebra, we get the following equation (Eq. \ref{eq:cn2}) for the Implicit Euler Scheme.
 		
-		\begin{equation}
-			CFL = K \frac{\Delta t}{(\Delta x)^{2}}
-		\end{equation}
+%		\begin{equation}
+%			\begin{split}
+%			u_{n+1,i} = u_{n,i} + \Delta t * \Big[ \frac{1}{2} \big( K \frac{u_{n,i+1} - 2 u_{n,i} + u_{n,i-1}}{\Delta x^{2}} \big) \\
+%			 \frac{1}{2} \big( K \frac{u_{n+1,i+1} - 2 u_{n+1,i} + u_{n+1,i-1}}{\Delta x^{2}} \big) + q_{n,i} \Big]
+%			\end{split}
+%		\end{equation}
+%		
+%		\noindent
+%		We define the CFL Number to be:
+%		
+%		\begin{equation}
+%			CFL = K \frac{\Delta t}{(\Delta x)^{2}}
+%		\end{equation}
 		
-		\boxedeq{}{\frac{-CFL}{2} * u_{n+1,i-1} + (1 + CFL) * u_{n+1, i} - \frac{-CFL}{2} * u_{n+1,i+1} = \\ \frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t}
+		\boxedeq{eq:cn2}{\frac{-CFL}{2} * u_{n+1,i-1} + (1 + CFL) * u_{n+1, i} - \frac{-CFL}{2} * u_{n+1,i+1} = \\ \frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t}
 		
-		\pagebreak
 		
 		\noindent
 		1) Dirilecht Condition at the Left Boundary x = 0:	\\
@@ -485,39 +618,39 @@ Submitted to: \\[0.5\baselineskip]
 		\begin{equation}
 			\frac{\partial u}{\partial x}(x=L, t) = C_{2}
     		\end{equation}
-    		
-    		\noindent
-    		Forward Difference
-    		
-    		\begin{equation}
-    			\frac{u_{n+1,i+1} - u_{n+1,i}}{\Delta x} = C_{2}
-    		\end{equation}
-    		
-    		\begin{equation}
-    			u_{n+1,i+1} = C_{2} \Delta x + u_{n+1,i}
-    		\end{equation}
-    		
-    		\noindent
-    		Where $i+1 = m$ and $m$ represents the last node (ghost node)
-    		
-    		\begin{equation}
-    			u_{n+1,m} = C_{2} \Delta x + u_{n+1,m-1}
-    		\end{equation}
-    		
-    		\noindent
-    		Plugging in
-
-		\begin{equation}
-			\begin{split}
-			\frac{-CFL}{2} * u_{n+1,i-1} + (1 + CFL) * u_{n+1, i} - \frac{CFL}{2} * \big ( C_{2} \Delta x + u_{n+1,i} \big) = \\
-			 \frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t
-			 \end{split}
-		\end{equation} 
-		
-		\boxedeq{}{\frac{-CFL}{2} * u_{n+1,i-1} + (1 + \frac{CFL}{2}) * u_{n+1, i} = \\
-			 \frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t + \frac{CFL}{2} * \big ( C_{2} \Delta x \big)}   		
-    		
-    		\pagebreak
+%    		
+%    		\noindent
+%    		Forward Difference
+%    		
+%    		\begin{equation}
+%    			\frac{u_{n+1,i+1} - u_{n+1,i}}{\Delta x} = C_{2}
+%    		\end{equation}
+%    		
+%    		\begin{equation}
+%    			u_{n+1,i+1} = C_{2} \Delta x + u_{n+1,i}
+%    		\end{equation}
+%    		
+%    		\noindent
+%    		Where $i+1 = m$ and $m$ represents the last node (ghost node)
+%    		
+%    		\begin{equation}
+%    			u_{n+1,m} = C_{2} \Delta x + u_{n+1,m-1}
+%    		\end{equation}
+%    		
+%    		\noindent
+%    		Plugging in
+%
+%		\begin{equation}
+%			\begin{split}
+%			\frac{-CFL}{2} * u_{n+1,i-1} + (1 + CFL) * u_{n+1, i} - \frac{CFL}{2} * \big ( C_{2} \Delta x + u_{n+1,i} \big) = \\
+%			 \frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t
+%			 \end{split}
+%		\end{equation} 
+%		
+%		\boxedeq{}{\frac{-CFL}{2} * u_{n+1,i-1} + (1 + \frac{CFL}{2}) * u_{n+1, i} = \\
+%			 \frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t + \frac{CFL}{2} * \big ( C_{2} \Delta x \big)}   		
+%    		
+%    		\pagebreak
     		
     		\noindent
     		Central Difference
@@ -551,6 +684,84 @@ Submitted to: \\[0.5\baselineskip]
     			\frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t + \frac{CFL}{2} * \big( 2 C_{2} \Delta x \big)}
     		
 		\pagebreak
+		
+		\section{Stability}
+		
+		\textbf{Explicit Euler}
+		
+		\begin{table}[h]
+			\caption{Explicit Euler Method Stability Tests}
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|}
+				\hline
+				Nodes [$NX$] & Time Steps [$NT$] & Thermal Diffusivity [$K$] & $\Delta t$ & $\Delta x$ & $CFL$ & Stability \\
+				\hline \rowcolor{Gray} 
+				20 & 500 & 0.1 & 0.  &         &         & Stable \\
+				\hline
+				20 & 200 & 0.1 & 0.2 & 0.31416 & 0.20264 & Stable \\
+				\hline \rowcolor{Gray} 
+				20 & 100 & 0.1 &     &         &         &        \\
+				\hline
+				20 & 50  & 0.1 &     &         &         &        \\
+				\hline
+			\end{tabular}
+		\end{table}
+		
+		\noindent
+		\textbf{Implicit Euler}
+		
+		\begin{table}[h]
+			\caption{Implicit Euler Method Stability Tests}
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|}
+				\hline
+				Nodes [$NX$] & Time Steps [$NT$] & Thermal Diffusivity [$K$] & $\Delta t$ & $\Delta x$ & $CFL$ & Stability \\
+				\hline \rowcolor{Gray} 
+				20 & 500 & 0.1 & 0.  &         &         & Stable \\
+				\hline
+				20 & 200 & 0.1 & 0.2 & 0.31416 & 0.20264 & Stable \\
+				\hline \rowcolor{Gray} 
+				20 & 100 & 0.1 &     &         &         &        \\
+				\hline
+				20 & 50  & 0.1 &     &         &         &        \\
+				\hline
+			\end{tabular}
+		\end{table}
+		
+		\noindent
+		\textbf{Crank-Nicolson}
+		
+		\begin{table}[h]
+			\caption{Crank-Nicolson Method Stability Tests}
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|}
+				\hline
+				Nodes [$NX$] & Time Steps [$NT$] & Thermal Diffusivity [$K$] & $\Delta t$ & $\Delta x$ & $CFL$ & Stability \\
+				\hline \rowcolor{Gray} 
+				20 & 500 & 0.1 & 0.  &         &         & Stable \\
+				\hline
+				20 & 200 & 0.1 & 0.2 & 0.31416 & 0.20264 & Stable \\
+				\hline \rowcolor{Gray} 
+				20 & 100 & 0.1 &     &         &         &        \\
+				\hline
+				20 & 50  & 0.1 &     &         &         &        \\
+				\hline
+			\end{tabular}
+		\end{table}
+		
+		\pagebreak
+		
+		\section{Error}
+		
+		\subsection{Spatial Resolution}
+		
+		\pagebreak
+		
+		\subsection{Temporal Resolution}
+		
+		\pagebreak
+		
+		\section{Conclusions}
 		
 		\pagebreak	
 	

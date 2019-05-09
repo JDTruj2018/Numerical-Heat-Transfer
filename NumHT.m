@@ -7,8 +7,8 @@
 % SCHEME = 1 -> IMPLICIT
 % SCHEME = 2 -> CRANK_NICOLSON
 
-function NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGMA, QMAX)
-    close all; clc;
+function U = NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGMA, QMAX)
+    clc;
     
     % Boundary Conditions
     LENGTH = L;                             % Length of Domain
@@ -53,18 +53,22 @@ function NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGMA, Q
         fprintf('Crank-Nicolson Method:\n');
     end
     
+    fprintf('Thermal Diffusivity [K]: %.3f\n', K);
     fprintf('BCs:\n(1) U(x) = %.2f At X = 0\n(2) dU/dX = %.2f at X = L = %.2f\n\n', C1, C2, L);
-    fprintf('Length: %.2f\t\tDX: %.2f\t\tNodes: %.0f\n', LENGTH, DX, NODES);
-    fprintf('Max Time: %.2f\t\tDT: %.2f\t\t\n\n', TMAX, DT);
+    fprintf('Length: %.2f\t\tDX: %.5f\t\tNodes: %.0f\n', LENGTH, DX, NODES);
+    fprintf('Max Time: %.2f\t\tDT: %.5f\t\t\n\n', TMAX, DT);
     if SOURCE_FLAG == 1
         fprintf('Q(x) = - QMAX * SIN(OMEGA * T) * EXP(-(X - L/2)^2 / SIGMA ^ 2)\n');
         fprintf('QMAX: %.2f\t\tOMEGA: %.2f rad/s\t\tSIGMA: %.2f\t\t L: %.2f\n\n', QMAX, W, SIGMA, LENGTH);
     end
-    fprintf('CFL Number: %.2f\n', CFL);
+    fprintf('CFL Number: %.5f\n', CFL);
     
     % Initialize Matrices
     U = zeros(TIMESTEPS, NODES + 2);
     Q = zeros(TIMESTEPS, NODES + 2);
+    
+    % Time Tolerance
+    eps = 10^-7;
     
     % If Heat Source Flag is True
     if SOURCE_FLAG == 1
@@ -94,13 +98,13 @@ function NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGMA, Q
     axis([0 LENGTH -QMAX QMAX]);
     
     suptitle(['Time = ', num2str(CURRENT_T), ' s']);
-    pause();
+    % pause();
     
     % Explicit Scheme
     if SCHEME == 0
         
         % Iterate Until TMAX
-        while CURRENT_T < TMAX
+        while CURRENT_T < TMAX - eps
             CURRENT_T = CURRENT_T + DT;
             TIMESTEP = TIMESTEP + 1;
 
@@ -122,7 +126,7 @@ function NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGMA, Q
             subplot(211);
             plot(X, U(n + 1, :), 'o-');
             xlabel('X', 'FontSize', 18); ylabel('T', 'Fontsize', 18);
-            axis([0 L -1.5 1.5]);
+            axis([0 L -2 2]);
 
             % Heat Source Profile
             subplot(212);
@@ -156,7 +160,7 @@ function NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGMA, Q
         DIAG(NODES + 1) = 2 .* CFL + 1;
         
         % Iterate Until TMAX
-        while CURRENT_T < TMAX
+        while CURRENT_T < TMAX - eps
             CURRENT_T = CURRENT_T + DT;
             TIMESTEP = TIMESTEP + 1;
 
@@ -200,7 +204,7 @@ function NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGMA, Q
             subplot(211);
             plot(X, U(n + 1, :), 'o-');
             xlabel('X', 'FontSize', 18); ylabel('T', 'Fontsize', 18);
-            axis([0 LENGTH -1.5 1.5]);
+            axis([0 LENGTH -2 2]);
 
             % Heat Source Profile
             subplot(212);
@@ -234,7 +238,7 @@ function NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGMA, Q
         DIAG(NODES + 1) = CFL + 1;
         
         % Iterate Until TMAX
-        while CURRENT_T < TMAX
+        while CURRENT_T < TMAX - eps
             CURRENT_T = CURRENT_T + DT;
             TIMESTEP = TIMESTEP + 1;
 
@@ -278,7 +282,7 @@ function NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGMA, Q
             subplot(211);
             plot(X, U(n + 1, :), 'o-');
             xlabel('X', 'FontSize', 18); ylabel('T', 'Fontsize', 18);
-            axis([0 LENGTH -1.5 1.5]);
+            axis([0 LENGTH -2 2]);
 
             % Heat Source Profile
             subplot(212);
@@ -291,5 +295,7 @@ function NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGMA, Q
             pause(0.01);
         end
     end
+    
+    close all;
 end
 
