@@ -88,13 +88,13 @@ function U = NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGM
     % Temperature Profile
     subplot(211);
     plot(X, U(1, :), 'o-');
-    xlabel('X', 'FontSize', 18); ylabel('T', 'Fontsize', 18);
+    xlabel('X', 'FontSize', 18); ylabel('Temperature [u]', 'Fontsize', 14);
     axis([0 LENGTH -2 2]);
     
     % Heat Source Profile
     subplot(212);
     plot(X, Q(1, :), 'o-');
-    xlabel('X', 'FontSize', 18); ylabel('Q', 'Fontsize', 18);
+    xlabel('X', 'FontSize', 18); ylabel('Heat Source [Q]', 'Fontsize', 14);
     axis([0 LENGTH -QMAX QMAX]);
     
     suptitle(['Time = ', num2str(CURRENT_T), ' s']);
@@ -125,13 +125,13 @@ function U = NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGM
             % Temperature Profile
             subplot(211);
             plot(X, U(n + 1, :), 'o-');
-            xlabel('X', 'FontSize', 18); ylabel('T', 'Fontsize', 18);
+            xlabel('X', 'FontSize', 18); ylabel('Temperature [u]', 'Fontsize', 14);
             axis([0 L -2 2]);
 
             % Heat Source Profile
             subplot(212);
             plot(X, Q(n + 1, :), 'o-');
-            xlabel('X', 'FontSize', 18); ylabel('Q', 'Fontsize', 18);
+            xlabel('X', 'FontSize', 18); ylabel('Heat Source [Q]', 'Fontsize', 14);
             axis([0 LENGTH -QMAX QMAX]);
 
             suptitle(['Time = ', num2str(CURRENT_T), ' s']);
@@ -203,13 +203,13 @@ function U = NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGM
             % Temperature Profile
             subplot(211);
             plot(X, U(n + 1, :), 'o-');
-            xlabel('X', 'FontSize', 18); ylabel('T', 'Fontsize', 18);
+            xlabel('X', 'FontSize', 18); ylabel('Temperature [u]', 'Fontsize', 14);
             axis([0 LENGTH -2 2]);
 
             % Heat Source Profile
             subplot(212);
             plot(X, Q(n + 1, :), 'o-');
-            xlabel('X', 'FontSize', 18); ylabel('Q', 'Fontsize', 18);
+            xlabel('X', 'FontSize', 18); ylabel('Heat Source [Q]', 'Fontsize', 14);
             axis([0 LENGTH -QMAX QMAX]);
 
             suptitle(['Time = ', num2str(CURRENT_T), ' s']);
@@ -281,13 +281,13 @@ function U = NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGM
             % Temperature Profile
             subplot(211);
             plot(X, U(n + 1, :), 'o-');
-            xlabel('X', 'FontSize', 18); ylabel('T', 'Fontsize', 18);
+            xlabel('X', 'FontSize', 14); ylabel('Temperature [u]', 'Fontsize', 14);
             axis([0 LENGTH -2 2]);
 
             % Heat Source Profile
             subplot(212);
             plot(X, Q(n + 1, :), 'o-');
-            xlabel('X', 'FontSize', 18); ylabel('Q', 'Fontsize', 18);
+            xlabel('X', 'FontSize', 14); ylabel('Heat Source [Q]', 'Fontsize', 14);
             axis([0 LENGTH -QMAX QMAX]);
 
             suptitle(['Time = ', num2str(CURRENT_T), ' s']);
@@ -296,6 +296,6 @@ function U = NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGM
         end
     end
     
-    close all;
+    close(fTemperature);
 end
 

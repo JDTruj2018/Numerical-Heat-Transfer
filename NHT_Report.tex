@@ -25,6 +25,7 @@
 \usepackage{adjustbox}
 \usepackage{empheq}
 \usepackage{xcolor}
+\usepackage{makecell}
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -228,6 +229,7 @@ Submitted to: \\[0.5\baselineskip]
 		\noindent
 		A table summarizing important parameters used is presented below. \\
 		
+		\FloatBarrier
 		\begin{table}[h]
 			\caption{Heat Equation Parameters and Boundary Conditions}
 			\centering
@@ -251,7 +253,8 @@ Submitted to: \\[0.5\baselineskip]
 				\hline
 			\end{tabular}
 		\end{table}
-	
+		\FloatBarrier
+		
 		\section{Finite Difference Schemes}
 		
 		\noindent
@@ -282,10 +285,7 @@ Submitted to: \\[0.5\baselineskip]
 %			u(x + \Delta x) - u(x - \Delta x) = 2 \Delta x u^{(1)}(x) + O(\Delta x^{3})
 %		\end{equation}
 		
-		\begin{equation}
-		\label{eq:cds}
-			u^{(1)} = \frac{u(x + \Delta x) - u(x - \Delta x)}{2 \Delta x} + O(\Delta x^{2})
-		\end{equation}
+		\boxedeq{eq:cds}{u^{(1)} = \frac{u(x + \Delta x) - u(x - \Delta x)}{2 \Delta x} + O(\Delta x^{2})}
 		
 		\noindent
 		\textbf{Second Order Finite Difference}
@@ -308,11 +308,7 @@ Submitted to: \\[0.5\baselineskip]
 %			u(x + \Delta x) + u(x - \Delta x) = 2u(x) + (\Delta x)^{2} u^{(2)}(x) + O(\Delta x^{4})
 %		\end{equation}	
 		
-		\begin{equation}
-		\label{eq:fd2}
-			u^{(2)}(x) = \frac{u(x + \Delta x) - 2 u(x) + u(x - \Delta x)}{(\Delta x)^{2}} + O(\Delta x^{2})
-		\end{equation}	
-		
+		\boxedeq{eq:fd2}{u^{(2)}(x) = \frac{u(x + \Delta x) - 2 u(x) + u(x - \Delta x)}{(\Delta x)^{2}} + O(\Delta x^{2})}
 		\pagebreak
 		
 		\noindent
@@ -373,6 +369,16 @@ Submitted to: \\[0.5\baselineskip]
 		
 		\boxedeq{eq:explicits}{u_{n+1,i} = CFL * u_{n,i+1} + (1 - 2 CFL) * u_{n,i} + CFL * u_{n,i-1} + q_{n,i} \Delta t}
 		
+		\FloatBarrier
+		\begin{figure}[h]
+			\centering
+			\captionsetup{justification=centering}
+			\includegraphics[width=0.75\linewidth]{"Figures/Explicit_Euler_Method"}
+			\caption{Explicit Euler Scheme Template}
+			\label{fig:explicit}
+		\end{figure}
+		\FloatBarrier
+		
 		\pagebreak
 		
 		\noindent
@@ -431,6 +437,16 @@ Submitted to: \\[0.5\baselineskip]
 %		\end{equation}
 		
 		\boxedeq{eq:implicit2}{-CFL * u_{n+1,i+1} + (2 CFL + 1) * u_{n+1,i} - CFL * u_{n+1,i-1} = u_{n,i} + q_{n,i} \Delta t}
+		
+		\FloatBarrier
+		\begin{figure}[h]
+			\centering
+			\captionsetup{justification=centering}
+			\includegraphics[width=0.75\linewidth]{"Figures/Implicit_Euler_Method"}
+			\caption{Implicit Euler Scheme Template}
+			\label{fig:implicit}
+		\end{figure}
+		\FloatBarrier
 		
 		\noindent
 		\textbf{Boundary Conditions} \\
@@ -545,7 +561,7 @@ Submitted to: \\[0.5\baselineskip]
 		\begin{equation}
 		\label{eq:cn}
 			\begin{split}
-			u_{n+1,i} = u_{n,i} + \Delta t * \Big[ \frac{1}{2} \big( K \frac{u_{n}(x + \Delta x) - 2 u_{n}(x) + u_{n}(x - \Delta x)}{\Delta x^{2}} \big) \\
+			u_{n+1,i} = u_{n,i} + \Delta t * \Big[ \frac{1}{2} \big( K \frac{u_{n}(x + \Delta x) - 2 u_{n}(x) + u_{n}(x - \Delta x)}{\Delta x^{2}} \big) + \\
 			 \frac{1}{2} \big( K \frac{u_{n+1}(x + \Delta x) - 2 u_{n+1}(x) + u_{n+1}(x - \Delta x)}{\Delta x^{2}} \big) + q_{n} \Big]_{i}
 			\end{split}
 		\end{equation}
@@ -590,8 +606,17 @@ Submitted to: \\[0.5\baselineskip]
 %			CFL = K \frac{\Delta t}{(\Delta x)^{2}}
 %		\end{equation}
 		
-		\boxedeq{eq:cn2}{\frac{-CFL}{2} * u_{n+1,i-1} + (1 + CFL) * u_{n+1, i} - \frac{-CFL}{2} * u_{n+1,i+1} = \\ \frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t}
+		\boxedeq{eq:cn2}{\frac{-CFL}{2} * u_{n+1,i-1} + (1 + CFL) * u_{n+1, i} - \frac{CFL}{2} * u_{n+1,i+1} = \\ \frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t}
 		
+		\FloatBarrier
+		\begin{figure}[h]
+			\centering
+			\captionsetup{justification=centering}
+			\includegraphics[width=0.75\linewidth]{"Figures/Crank_Nicolson_Method"}
+			\caption{Crank-Nicolson Scheme Template}
+			\label{fig:cn}
+		\end{figure}
+		\FloatBarrier
 		
 		\noindent
 		1) Dirilecht Condition at the Left Boundary x = 0:	\\
@@ -687,77 +712,122 @@ Submitted to: \\[0.5\baselineskip]
 		
 		\section{Stability}
 		
-		\textbf{Explicit Euler}
+		\noindent
+		A stability analysis indicates that the Explicit Euler Method must satisfy Von Neumann stability, which is defined below in Eq. \ref{eq:vonneumann}, making the method conditionally stable. However, the Implicit Euler Method and the Crank-Nicolson methods are unconditionally stable, and do not need to satisfy the condition in Eq. \ref{eq:vonneumann}. \\
 		
+		\noindent
+		This stability information was verified by running each method multiple times with a domain length of $L = 2*\pi$ over a time period of $T_{max} = 40 s$. Each run focused on changing the number of spacial nodes ($NX$) or the number of time steps ($NT$) in order to change the spacial resolution ($\Delta x$) or the temporal resolution ($\Delta t$) systematically in order to slowly the Courant number (CFD) defined in Eq. \ref{eq:cfl}.	\\
+		
+
+		
+		\begin{equation}
+		\label{eq:vonneumann}
+			CFL = K\frac{\Delta t}{\Delta x^{2}} \leq \frac{1}{2}
+		\end{equation}	
+
+		\FloatBarrier
 		\begin{table}[h]
 			\caption{Explicit Euler Method Stability Tests}
 			\centering
-			\begin{tabular}{|c|c|c|c|c|c|c|}
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
 				\hline
-				Nodes [$NX$] & Time Steps [$NT$] & Thermal Diffusivity [$K$] & $\Delta t$ & $\Delta x$ & $CFL$ & Stability \\
+				\makecell{Nodes \\ $NX$} & \makecell{Time Steps \\ $NT$} & \makecell{$K$} & $\Delta t$ & $\Delta x$ & $CFL$ & \makecell{Explicit Euler \\ Stability} & \makecell{Implicit Euler \\ Stability} & \makecell{Crank-Nicolson \\ Stability} \\
 				\hline \rowcolor{Gray} 
-				20 & 500 & 0.1 & 0.  &         &         & Stable \\
+				20  & 500 & 0.1 & 0.08 & 0.314 & 0.081 & Stable & Stable & Stable  \\
 				\hline
-				20 & 200 & 0.1 & 0.2 & 0.31416 & 0.20264 & Stable \\
+				20  & 200 & 0.1 & 0.20 & 0.314 & 0.203 & Stable & Stable & Stable  \\
 				\hline \rowcolor{Gray} 
-				20 & 100 & 0.1 &     &         &         &        \\
+				20  & 100 & 0.1 & 0.40 & 0.314 & 0.405 & Stable & Stable & Stable  \\
 				\hline
-				20 & 50  & 0.1 &     &         &         &        \\
+				20  & 50  & 0.1 & 0.80 & 0.314 & 0.811 & Unstable & Stable & Stable \\
+				\hline \rowcolor{Gray}
+				50  & 50  & 0.1 & 0.80 & 0.126 & 5.066 & Unstable & Stable & Stable \\
+				\hline
+				100 & 50  & 0.1 & 0.80 & 0.063 & 20.26 & Unstable & Stable & Stable \\
 				\hline
 			\end{tabular}
 		\end{table}
-		
-		\noindent
-		\textbf{Implicit Euler}
-		
-		\begin{table}[h]
-			\caption{Implicit Euler Method Stability Tests}
-			\centering
-			\begin{tabular}{|c|c|c|c|c|c|c|}
-				\hline
-				Nodes [$NX$] & Time Steps [$NT$] & Thermal Diffusivity [$K$] & $\Delta t$ & $\Delta x$ & $CFL$ & Stability \\
-				\hline \rowcolor{Gray} 
-				20 & 500 & 0.1 & 0.  &         &         & Stable \\
-				\hline
-				20 & 200 & 0.1 & 0.2 & 0.31416 & 0.20264 & Stable \\
-				\hline \rowcolor{Gray} 
-				20 & 100 & 0.1 &     &         &         &        \\
-				\hline
-				20 & 50  & 0.1 &     &         &         &        \\
-				\hline
-			\end{tabular}
-		\end{table}
-		
-		\noindent
-		\textbf{Crank-Nicolson}
-		
-		\begin{table}[h]
-			\caption{Crank-Nicolson Method Stability Tests}
-			\centering
-			\begin{tabular}{|c|c|c|c|c|c|c|}
-				\hline
-				Nodes [$NX$] & Time Steps [$NT$] & Thermal Diffusivity [$K$] & $\Delta t$ & $\Delta x$ & $CFL$ & Stability \\
-				\hline \rowcolor{Gray} 
-				20 & 500 & 0.1 & 0.  &         &         & Stable \\
-				\hline
-				20 & 200 & 0.1 & 0.2 & 0.31416 & 0.20264 & Stable \\
-				\hline \rowcolor{Gray} 
-				20 & 100 & 0.1 &     &         &         &        \\
-				\hline
-				20 & 50  & 0.1 &     &         &         &        \\
-				\hline
-			\end{tabular}
-		\end{table}
+		\FloatBarrier
 		
 		\pagebreak
 		
 		\section{Error}
 		
+		\subsection{Error Evolution Over Time}
+
+		\FloatBarrier
+		\begin{figure}[!h]
+			\captionsetup[subfigure]{justification=centering}
+			\centering
+			
+			\begin{subfigure}{.45\textwidth}
+				\centering
+				\includegraphics[width=1\linewidth]{"Figures/MATLAB/NoSourceCompare"}
+				\caption{Comparison of Temperature Profiles at T = 40s For Each Method}
+				\label{fig:compnosource}
+			\end{subfigure}
+			\begin{subfigure}{.45\textwidth}
+				\centering
+				\includegraphics[width=1\linewidth]{"Figures/MATLAB/NoSourceErrorTime"}
+				\caption{Error Evolution Over Time ($T = 0s$ to $T = 40s$)}
+				\label{fig:evolutionnosource}
+			\end{subfigure}
+			
+			\caption{Error Comparison and Evolution for No Source Function Case}
+			\label{fig:nosource}
+		\end{figure}
+		\FloatBarrier
+		
+		\FloatBarrier
+		\begin{figure}[!h]
+			\captionsetup[subfigure]{justification=centering}
+			\centering
+			
+			\begin{subfigure}{.45\textwidth}
+				\centering
+				\includegraphics[width=1\linewidth]{"Figures/MATLAB/SourceCompare"}
+				\caption{Comparison of Temperature Profiles at T = 40s For Each Method}
+				\label{fig:compnosource}
+			\end{subfigure}
+			\begin{subfigure}{.45\textwidth}
+				\centering
+				\includegraphics[width=1\linewidth]{"Figures/MATLAB/SourceErrorTime"}
+				\caption{Error Evolution Over Time ($T = 0s$ to $T = 40s$)}
+				\label{fig:evolutionnosource}
+			\end{subfigure}
+			
+			\caption{Error Comparison and Evolution for Heat Source Function ($q(x, t)$) Case}
+			\label{fig:nosource}
+		\end{figure}
+		\FloatBarrier
+		
+		\pagebreak
+		
 		\subsection{Spatial Resolution}
+		
+		\FloatBarrier
+		\begin{figure}[h]
+			\centering
+			\captionsetup{justification=centering}
+			\includegraphics[width=\linewidth]{"Figures/MATLAB/ConstantDTSource"}
+			\caption{Error as a Function of Spacial Step}
+			\label{fig:explicit}
+		\end{figure}		
+		\FloatBarrier
 		
 		\pagebreak
 		
 		\subsection{Temporal Resolution}
+		
+		\FloatBarrier
+		\begin{figure}[h]
+			\centering
+			\captionsetup{justification=centering}
+			\includegraphics[width=\linewidth]{"Figures/MATLAB/ConstantDXSource"}
+			\caption{Error as a Function of Time Step}
+			\label{fig:explicit}
+		\end{figure}		
+		\FloatBarrier
 		
 		\pagebreak
 		
@@ -768,6 +838,11 @@ Submitted to: \\[0.5\baselineskip]
 	\section{Appendix}
 	
 	\centerline{\textit{MATLAB Code for Numerical Solution of Heat Equation}}
+	
 	\lstinputlisting[label=lst:p1, caption=Numerical Heat Equation, breaklines]{NumHT.m}
+	
+	\pagebreak
+	
+	\lstinputlisting[label=lst:p2, caption=Wrapper Used to Iterate and Calculate Errors, breaklines]{RunnerHT.m}
 	
 \end{document}
