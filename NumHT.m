@@ -184,7 +184,7 @@ function U = NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGM
             % RHS(NODES + 1) = RHS(NODES + 1) + C2 .* CFL .* DX;
             
             % Central Difference Scheme
-            L(NODES) = -2 .* CFL;
+            LOWER(NODES) = -2 .* CFL;
             RHS(NODES + 1) = RHS(NODES + 1) + 2 .* C2 .* CFL .* DX;
             
             MA = sparse([LOWERI, DIAGI, UPPERI], [LOWERJ, DIAGJ, UPPERJ], [LOWER, DIAG, UPPER], NODES + 1, NODES + 1);
@@ -262,7 +262,7 @@ function U = NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGM
             % RHS(NODES + 1) = RHS(NODES + 1) + C2 .* CFL .* DX ./ 2;
             
             % Central Difference Scheme
-            L(NODES) = -CFL;
+            LOWER(NODES) = -CFL;
             RHS(NODES + 1) = RHS(NODES + 1) + C2 .* CFL .* DX;
             
             MA = sparse([LOWERI, DIAGI, UPPERI], [LOWERJ, DIAGJ, UPPERJ], [LOWER, DIAG, UPPER], NODES + 1, NODES + 1);

@@ -716,7 +716,7 @@ Submitted to: \\[0.5\baselineskip]
 		A stability analysis indicates that the Explicit Euler Method must satisfy Von Neumann stability, which is defined below in Eq. \ref{eq:vonneumann}, making the method conditionally stable. However, the Implicit Euler Method and the Crank-Nicolson methods are unconditionally stable, and do not need to satisfy the condition in Eq. \ref{eq:vonneumann}. \\
 		
 		\noindent
-		This stability information was verified by running each method multiple times with a domain length of $L = 2*\pi$ over a time period of $T_{max} = 40 s$. Each run focused on changing the number of spacial nodes ($NX$) or the number of time steps ($NT$) in order to change the spacial resolution ($\Delta x$) or the temporal resolution ($\Delta t$) systematically in order to slowly the Courant number (CFD) defined in Eq. \ref{eq:cfl}.	\\
+		This stability behavior was verified by running each method multiple times with a domain length of $L = 2*\pi$ over a time period of $T_{max} = 40 s$. Each run focused on changing the number of spacial nodes ($NX$) or the number of time steps ($NT$) in order to change the spacial resolution ($\Delta x$) or the temporal resolution ($\Delta t$) systematically in order to slowly the Courant number (CFD) defined in Eq. \ref{eq:cfl}. As seen in Table \ref{tbl:stability}, the Explicit Euler method is only stable for Courant numbers (CFL) less than $\frac{1}{2}$, while the Implicit Euler and Crank-Nicolson methods are unconditionally stable at all Courant numbers (CFL).\\
 		
 
 		
@@ -749,12 +749,23 @@ Submitted to: \\[0.5\baselineskip]
 		\end{table}
 		\FloatBarrier
 		
-		\pagebreak
-		
 		\section{Error}
 		
 		\subsection{Error Evolution Over Time}
 
+		\noindent
+		To visualize and understand the accuracy of the three methods, each was ran and compared to a baseline "analytical" case (performed using Crank-Nicolson with small timestep and high spacial resolution). This was done for the case with no source function ($q(x,t) = 0$) and for the case with the source function ($q(x, t)$) defined by Eq. \ref{eq:hsource}. The solutions were then examined at the final time of $T = 40 s$ and plotted against one another. Additionally, the L-2 Norm error (compared to the baseline "analytical" solution and defined by Eq. \ref{eq:L2Norm}) at each time step was calculated and plotted over time to visualize how the error grows for each method as the solution evolves further from initial conditions.		
+		
+		\begin{equation}
+		\label{eq:L2Norm}
+			Error = \sqrt{\sum_{j=1}^{n} R_{j}^{2}} = \sqrt{\sum_{j=1}^{n} (U_{j} - U_{j, analytical})^{2}}
+		\end{equation}
+		
+		\pagebreak
+		
+		\noindent
+		When no source term is present, it can clearly be seen in Figure \ref{fig:nosource} that the Explicit Euler method results in the largest error while the Implicit Euler and Crank-Nicolson methods perform much better. After letting the solution run for $T = 40 s$ (Figure \ref{fig:compnosource}), this can most clearly be seen at the right boundary, where the Neumann boundary condition (See Eq. \ref{eq:bc2}) has been enforced. Additionally, as seen in Figure \ref{fig:evolutionnosource}, as the solution evolves further from its initial condition, the Explicit Euler method increases in error proportional to $\frac{1}{T}$ while the Implicit and Crank-Nicolson methods increase in error proportional to $\frac{1}{T^{2}}$.	
+		
 		\FloatBarrier
 		\begin{figure}[!h]
 			\captionsetup[subfigure]{justification=centering}
@@ -778,6 +789,10 @@ Submitted to: \\[0.5\baselineskip]
 		\end{figure}
 		\FloatBarrier
 		
+		\noindent
+		When a source term is present, as defined by Eq.\ref{eq:hsource}, a similar pattern is observed (Figure \ref{fig:source}). At $Time = 40 s$ (Figure \ref{fig:compsource}), The Explicit Euler method has the largest error, while the Implicit Euler and Crank-Nicolson methods have the smallest error. However, examining Figure \ref{fig:evolutionsource} indicates the total error oscillates at the same frequency of the source function
+			
+		
 		\FloatBarrier
 		\begin{figure}[!h]
 			\captionsetup[subfigure]{justification=centering}
@@ -787,17 +802,17 @@ Submitted to: \\[0.5\baselineskip]
 				\centering
 				\includegraphics[width=1\linewidth]{"Figures/MATLAB/SourceCompare"}
 				\caption{Comparison of Temperature Profiles at T = 40s For Each Method}
-				\label{fig:compnosource}
+				\label{fig:compsource}
 			\end{subfigure}
 			\begin{subfigure}{.45\textwidth}
 				\centering
 				\includegraphics[width=1\linewidth]{"Figures/MATLAB/SourceErrorTime"}
 				\caption{Error Evolution Over Time ($T = 0s$ to $T = 40s$)}
-				\label{fig:evolutionnosource}
+				\label{fig:evolutionsource}
 			\end{subfigure}
 			
 			\caption{Error Comparison and Evolution for Heat Source Function ($q(x, t)$) Case}
-			\label{fig:nosource}
+			\label{fig:source}
 		\end{figure}
 		\FloatBarrier
 		

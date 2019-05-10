@@ -34,9 +34,9 @@ BB = NumHT(1, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG);
 CC = NumHT(2, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG);
 
 BASELINE = BASELINE(1:MNT/NT:end, 1:MNX/NX:end);
-ResA = BASELINE - AA(:, 1:end-1); ErrorA = sqrt(sum(ResA' .* ResA'));
-ResB = BASELINE - BB(:, 1:end-1); ErrorB = sqrt(sum(ResB' .* ResB'));
-ResC = BASELINE - CC(:, 1:end-1); ErrorC = sqrt(sum(ResC' .* ResC'));
+ResA = BASELINE - AA(:, 1:end-1); ErrorA = sqrt(sum(ResA' .* ResA') ./ NX);
+ResB = BASELINE - BB(:, 1:end-1); ErrorB = sqrt(sum(ResB' .* ResB') ./ NX);
+ResC = BASELINE - CC(:, 1:end-1); ErrorC = sqrt(sum(ResC' .* ResC') ./ NX);
 
 fErrorTime1 = figure('Name', 'Error Evolution with Time', 'NumberTitle', 'off');
 figure(fErrorTime1); hold on;
@@ -49,21 +49,35 @@ xlabel('Time', 'FontSize', 14); ylabel('Error', 'FontSize', 14);
 title('Error Evolution', 'FontSize', 24); legend('show');
 
 saveas(fErrorTime1, 'Figures/MATLAB/NoSourceErrorTime.png');
-saveas(fErrorTime1, 'Figures/MATLAB/NoSourceErrorTime.fig');
+saveas(fErrorTime1, 'Figures/MATLAB/Figs/NoSourceErrorTime.fig');
 
 fCompare1 = figure('Name', 'Solution Comparison: T = 40', 'NumberTitle', 'off');
 figure(fCompare1); hold on;
 
-plot(XX, AA(end, :), '-', 'LineWidth', 2, 'DisplayName', 'Explicit Euler');
-plot(XX, BB(end, :), '-', 'LineWidth', 2, 'DisplayName', 'Implicit Euler');
-plot(XX, CC(end, :), '-', 'LineWidth', 2, 'DisplayName', 'Crank-Nicolson');
-plot(XX(1:end-1), BASELINE(end, :), '-o', 'LineWidth', 2, 'DisplayName', 'Baseline');
+subplot(2, 2, 1);
+plot(XX(1:end-1), BASELINE(end, :), '-', 'LineWidth', 2, 'DisplayName', 'Baseline');
+xlabel('X'); ylabel('Temperature [u]');
+title('Baseline (Analytical)'); axis([0 L -2 2]);
 
-xlabel('X', 'FontSize', 14); ylabel('Temperature [u]', 'FontSize', 14);
-title('Time = 40 s', 'FontSize', 24); legend('show'); axis([0 L -2 2]);
+subplot(2, 2, 2);
+plot(XX, AA(end, :), '-', 'LineWidth', 2, 'DisplayName', 'Explicit Euler');
+xlabel('X'); ylabel('Temperature [u]');
+title('Explicit Euler'); axis([0 L -2 2]);
+
+subplot(2, 2, 3);
+plot(XX, BB(end, :), '-', 'LineWidth', 2, 'DisplayName', 'Implicit Euler');
+xlabel('X'); ylabel('Temperature [u]');
+title('Implicit Euler'); axis([0 L -2 2]);
+
+subplot(2, 2, 4);
+plot(XX, CC(end, :), '-', 'LineWidth', 2, 'DisplayName', 'Crank-Nicolson');
+xlabel('X'); ylabel('Temperature [u]');
+title('Crank-Nicolson'); axis([0 L -2 2]);
+
+suptitle('Time = 40 s');  
 
 saveas(fCompare1, 'Figures/MATLAB/NoSourceCompare.png');
-saveas(fCompare1, 'Figures/MATLAB/Figs/NoSourceCompare.png');
+saveas(fCompare1, 'Figures/MATLAB/Figs/NoSourceCompare.fig');
 
 clear all;
 
@@ -92,9 +106,9 @@ BB = NumHT(1, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG);
 CC = NumHT(2, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG);
 
 BASELINE = BASELINE(1:MNT/NT:end, 1:MNX/NX:end);
-ResA = BASELINE - AA(:, 1:end-1); ErrorA = sqrt(sum(ResA' .* ResA'));
-ResB = BASELINE - BB(:, 1:end-1); ErrorB = sqrt(sum(ResB' .* ResB'));
-ResC = BASELINE - CC(:, 1:end-1); ErrorC = sqrt(sum(ResC' .* ResC'));
+ResA = BASELINE - AA(:, 1:end-1); ErrorA = sqrt(sum(ResA' .* ResA') ./ NX);
+ResB = BASELINE - BB(:, 1:end-1); ErrorB = sqrt(sum(ResB' .* ResB') ./ NX);
+ResC = BASELINE - CC(:, 1:end-1); ErrorC = sqrt(sum(ResC' .* ResC') ./ NX);
 
 fErrorTime2 = figure('Name', 'Error Evolution with Time', 'NumberTitle', 'off');
 figure(fErrorTime2); hold on;
@@ -122,13 +136,27 @@ CC = NumHT(2, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG);
 fCompare2 = figure('Name', 'Solution Comparison: T = 40', 'NumberTitle', 'off');
 figure(fCompare2); hold on;
 
-plot(XX, AA(end, :), '-', 'LineWidth', 2, 'DisplayName', 'Explicit Euler');
-plot(XX, BB(end, :), '-', 'LineWidth', 2, 'DisplayName', 'Implicit Euler');
-plot(XX, CC(end, :), '-', 'LineWidth', 2, 'DisplayName', 'Crank-Nicolson');
-plot(XX(1:end-1), BASELINE(end, :), '-o', 'LineWidth', 2, 'DisplayName', 'Baseline');
+subplot(2, 2, 1);
+plot(XX(1:end-1), BASELINE(end, :), '-', 'LineWidth', 2, 'DisplayName', 'Baseline');
+xlabel('X'); ylabel('Temperature [u]');
+title('Baseline (Analytical)'); axis([0 L -2 2]);
 
-xlabel('X', 'FontSize', 14); ylabel('Temperature [u]', 'FontSize', 14);
-title('Time = 40 s', 'FontSize', 24); legend('show'); axis([0 L -2 2]);
+subplot(2, 2, 2);
+plot(XX, AA(end, :), '-', 'LineWidth', 2, 'DisplayName', 'Explicit Euler');
+xlabel('X'); ylabel('Temperature [u]');
+title('Explicit Euler'); axis([0 L -2 2]);
+
+subplot(2, 2, 3);
+plot(XX, BB(end, :), '-', 'LineWidth', 2, 'DisplayName', 'Implicit Euler');
+xlabel('X'); ylabel('Temperature [u]');
+title('Implicit Euler'); axis([0 L -2 2]);
+
+subplot(2, 2, 4);
+plot(XX, CC(end, :), '-', 'LineWidth', 2, 'DisplayName', 'Crank-Nicolson');
+xlabel('X'); ylabel('Temperature [u]');
+title('Crank-Nicolson'); axis([0 L -2 2]);
+
+suptitle('Time = 40 s');  
 
 saveas(fCompare2, 'Figures/MATLAB/SourceCompare.png');
 saveas(fCompare2, 'Figures/MATLAB/Figs/SourceCompare.fig');
@@ -167,7 +195,7 @@ for SCHEME = 0:2
         B = BLAST(1:end-1);
         
         RES = ULAST - B; 
-        RVX(SCHEME + 1, ii) = sqrt(sum(RES .* RES));
+        RVX(SCHEME + 1, ii) = sqrt(sum(RES .* RES) ./ NX);
         
         hold off;
         for jj = 0:SCHEME
@@ -216,7 +244,7 @@ for SCHEME = 0:2
         B = BLAST(1:MNX/NX(ii):end-1);
         
         RES = ULAST - B; 
-        RVT(SCHEME + 1, ii) = sqrt(sum(RES .* RES));
+        RVT(SCHEME + 1, ii) = sqrt(sum(RES .* RES) ./ NX(ii));
         
         hold off;
         for jj = 0:SCHEME
@@ -268,7 +296,7 @@ for SCHEME = 0:2
         B = BLAST(1:end-1);
         
         RES = ULAST - B; 
-        RVX(SCHEME + 1, ii) = sqrt(sum(RES .* RES));
+        RVX(SCHEME + 1, ii) = sqrt(sum(RES .* RES) ./ NX);
         
         hold off;
         for jj = 0:SCHEME
@@ -317,7 +345,7 @@ for SCHEME = 0:2
         B = BLAST(1:MNX/NX(ii):end-1);
         
         RES = ULAST - B; 
-        RVT(SCHEME + 1, ii) = sqrt(sum(RES .* RES));
+        RVT(SCHEME + 1, ii) = sqrt(sum(RES .* RES) ./ NX(ii));
         
         hold off;
         for jj = 0:SCHEME
