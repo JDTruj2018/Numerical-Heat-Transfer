@@ -18,7 +18,7 @@
 \usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
 \usepackage{esdiff}
 \usepackage{tabularx}
-\usepackage{amsmath}
+\usepackage{amsmath, nccmath}
 \usepackage{listings}
 \usepackage{color}
 \usepackage{placeins}
@@ -322,8 +322,10 @@ Submitted to: \\[0.5\baselineskip]
 			\frac{u_{n+1} - u_{n}}{\Delta t} = f(t_{n}, u_{n})
 		\end{equation}
 		
+		\vspace{1em}
+		
 		\noindent
-		Where the temperature across the domain at the next time step is calculated directly from the temperature field across the domain at the current time step. \\
+		Where the temperature across the domain at the next time step is calculated directly from the temperature field across the domain at the current time step as seen in Figure \ref{fig:explicit}. \\
 		
 		\noindent
 		Expanding Eq. \ref{eq:explicit}, where $f(t_{n}, u_{n})$ is given by the one-dimensional heat equation (Eq. \ref{eq:heat}) gives:
@@ -341,11 +343,7 @@ Submitted to: \\[0.5\baselineskip]
 		
 		\begin{equation}
 		\label{eq:delta}
-			\begin{split}
-				u_{n}(x + \Delta x) = u_{n,i+1} \\
-				u_{n}(x)            = u_{n,i} \\
-				u_{n}(x - \Delta x) = u_{n,i-1}
-			\end{split}
+				u_{n}(x + \Delta x) = u_{n,i+1}, \hphantom{xxxxx} u_{n}(x) = u_{n,i}, \hphantom{xxxxx} u_{n}(x - \Delta x) = u_{n,i-1}
 		\end{equation}
 		
 %		\begin{equation}
@@ -356,6 +354,8 @@ Submitted to: \\[0.5\baselineskip]
 %			u_{n+1,i} = u_{n,i} + \Delta t \big[ K \big(\frac{u_{n,i+1} - 2 u_{n,i} + u_{n,\i-1}}{(\Delta x)^{2}}\big) + q_{n,i}(x) \big]
 %		\end{equation}
 		
+		\vspace{1em}
+		
 		\noindent
 		And we define the CFL Number to be:
 		
@@ -364,22 +364,45 @@ Submitted to: \\[0.5\baselineskip]
 			CFL = K \frac{\Delta t}{(\Delta x)^{2}}
 		\end{equation}
 		
+		\vspace{1em}
+		
 		\noindent
-		This gives the \textbf{explicit} final numerical solution (Eq. \ref{eq:explicits}) for the temperature field at the next ($n + 1$) timestep, given the tempreature field at the current ($n$) timestep.
+		This gives the explicit final numerical solution (Eq. \ref{eq:explicits}) for the temperature field at the next ($n + 1$) timestep, given the tempreature field at the current ($n$) timestep.
 		
 		\boxedeq{eq:explicits}{u_{n+1,i} = CFL * u_{n,i+1} + (1 - 2 CFL) * u_{n,i} + CFL * u_{n,i-1} + q_{n,i} \Delta t}
+		
+%		\vspace{1em}
+%		
+%		\noindent
+%		The application of Eq. \ref{eq:explicits} is visualized below in Figure \ref{fig:explicit}, where three known temperatures at the current time step are used to calculate a single unknown temperature at the next time step according to the Explicit Euler Method.		
 		
 		\FloatBarrier
 		\begin{figure}[h]
 			\centering
 			\captionsetup{justification=centering}
-			\includegraphics[width=0.75\linewidth]{"Figures/Explicit_Euler_Method"}
+			\includegraphics[width=0.65\linewidth]{"Figures/Explicit_Euler_Method"}
 			\caption{Explicit Euler Scheme Template}
 			\label{fig:explicit}
 		\end{figure}
 		\FloatBarrier
 		
 		\pagebreak
+		
+		\noindent
+		\textbf{Boundary Conditions}
+		
+		\noindent
+		1) To satisfy the Dirilecht Boundary Condition, the left node is simply set according to Eq. \ref{eq:bc1}.
+		
+		\boxedeq{eq:explicitbc1}{u_{n + 1, 1} = \begin{cases} 
+          					C_{1} * \frac{t}{t_{ramp}} & t\leq t_{ramp} \\
+          					C_{1}                      & t > t_{ramp}
+       					\end{cases}}
+		
+		\noindent
+		2) To satisfy the Neumann Boundary Condition, the First-Order Finite Difference Central Difference Scheme (Eq. \ref{eq:cds}) is applied with a ghost node to obtain Eq. \ref{eq:explicitbc2}, where the ghost node is represented by $m$, the boundary node by $m - 1$ etc.
+		
+		\boxedeq{eq:explicitbc2}{u_{n+1, m} = u_{n+1, m-2} + 2 \Delta X * C_{2}}		
 		
 		\noindent
 		\section{Implicit Euler}
@@ -391,10 +414,12 @@ Submitted to: \\[0.5\baselineskip]
 		\label{eq:implicit}
 			u_{n+1} = u_{n} + \Delta t * f(t_{n+1}, u_{n+1})
 		\end{equation}
-		
-		\noindent
-		Unlike the Explicit Euler scheme, the Implicit Euler scheme requires the simultaneous solution of all points in the domain for the next time step. \\
-		
+%		
+%		\vspace{1em}
+%		
+%		\noindent
+%		Unlike the Explicit Euler scheme, the Implicit Euler scheme requires the simultaneous solution of all points in the domain for the next time step. \\
+%		
 		\noindent
 		Expanding Eq. \ref{eq:implicit} gives:
 		
@@ -406,8 +431,10 @@ Submitted to: \\[0.5\baselineskip]
 			u_{n+1,i} = u_{n,i} + \Delta t \big[ K \big(\frac{u_{n+1}(x + \Delta x) - 2 u_{n+1} (x) + u_{n+1} (x - \Delta x)}{\Delta x^{2}} \big) + q_{n}(x)\big]_{i}
 		\end{equation}
 	
+		\vspace{1em}
+		
 		\noindent
-		Note that Eq. \ref{eq:delta} still applies to Eq. \ref{eq:implicit} and we still define the CFL number as in Eq. \ref{eq:cfl}. After some algebra, we get the following equation (Eq. \ref{eq:implicit2}) for the Implicit Euler Scheme.
+		Note that Eq. \ref{eq:delta} still applies and the CFL number is defined as in Eq. \ref{eq:cfl}. After some algebra, we get the following equation (Eq. \ref{eq:implicit2}) for the Implicit Euler Scheme.
 		
 %		\begin{equation}
 %			\begin{split}
@@ -442,37 +469,51 @@ Submitted to: \\[0.5\baselineskip]
 		\begin{figure}[h]
 			\centering
 			\captionsetup{justification=centering}
-			\includegraphics[width=0.75\linewidth]{"Figures/Implicit_Euler_Method"}
+			\includegraphics[width=0.65\linewidth]{"Figures/Implicit_Euler_Method"}
 			\caption{Implicit Euler Scheme Template}
 			\label{fig:implicit}
 		\end{figure}
 		\FloatBarrier
 		
+		\pagebreak
+		
 		\noindent
 		\textbf{Boundary Conditions} \\
 		
 		\noindent
-		1) Dirilecht Condition at the Left Boundary x = 0:	\\
-		
-		\begin{equation}
-			u(x=0, t) = \begin{cases} 
-          					C_{1} * \frac{t}{t_{ramp}} & t\leq t_{ramp} \\
-          					C_{1}                      & t > t_{ramp}
-       					\end{cases}
-    		\end{equation}
-    		
-    		\begin{equation}
-			-CFL * f_{BC1} + (2CFL + 1) * u_{n+1,2} - CFL * u_{n+1,3} = u_{n,2} + q_{n,2}\Delta t
-		\end{equation} 
-		
-		\boxedeq{}{(2CFL + 1) * u_{n+1,2} - CFL * u_{n+1,3} = u_{n,2} + q_{n,2}\Delta t + CFL * f_{BC1}} 
+		1) To satisfy the Dirilecht Boundary Condition, Eq. \ref{eq:bc1} is inserted into the Implicit Euler scheme (Eq. \ref{eq:implicit}) at the left boundary node to obtain the Eq \ref{eq:implicitbc1}, which is then solved simultaneously with the remaining equations. Note that $f_{BC1}$ represents the value of the left boundary condition as defined by Eq. \ref{eq:bc1}.
+%		 
+%		Dirilecht Condition at the Left Boundary x = 0:	\\
+%		
+%		\begin{equation}
+%			u(x=0, t) = \begin{cases} 
+%          					C_{1} * \frac{t}{t_{ramp}} & t\leq t_{ramp} \\
+%          					C_{1}                      & t > t_{ramp}
+%       					\end{cases}
+%    		\end{equation}
+%    		
+%    		\begin{equation}
+%			-CFL * f_{BC1} + (2CFL + 1) * u_{n+1,2} - CFL * u_{n+1,3} = u_{n,2} + q_{n,2}\Delta t
+%		\end{equation} 
+       					
+		\boxedeq{eq:implicitbc1}{(2CFL + 1) * u_{n+1,2} - CFL * u_{n+1,3} = u_{n,2} + q_{n,2}\Delta t + CFL * f_{BC1}} 
 		
 		\noindent
-		2) Neumann Condition at the Right Boundary x = L: \\
+		Additionally, the boundary node is defined as in Eq. \ref{eq:explicitbc1}, reproduced below as Eq. \ref{eq:implicitbc11}
 		
-		\begin{equation}
-			\frac{\partial u}{\partial x}(x=L, t) = C_{2}
-    		\end{equation}
+		\boxedeq{eq:implicitbc11}{u_{n + 1, 1} = \begin{cases} 
+          			C_{1} * \frac{t}{t_{ramp}} & t\leq t_{ramp} \\
+          			C_{1}                      & t > t_{ramp}
+       			\end{cases}}
+		
+		\noindent
+		2) To satisfy the Neumann Condition, the First-Order Finite Difference Central Difference Scheme (Eq. 6) is applied with a ghost node to obtain Eq. \ref{eq:implicitbc2} by plugging in Eq. \ref{eq:explicitbc2} into Eq. \ref{eq:implicit2}, where the ghost node is represented by $m$, the boundary node by $m - 1$ etc.
+		
+%		Neumann Condition at the Right Boundary x = L: \\
+%		
+%		\begin{equation}
+%			\frac{\partial u}{\partial x}(x=L, t) = C_{2}
+%    		\end{equation}
 %    		
 %    		\noindent
 %    		Forward Difference
@@ -509,32 +550,80 @@ Submitted to: \\[0.5\baselineskip]
 %    		
 %    		\boxedeq{}{-CFL * u_{n+1,m-2} + (1 + CFL) * u_{n+1,m-1} = u_{n,m-1} + q_{n,m-1} \Delta t + CFL * C_{2} \Delta x}
     		
+%    		\noindent
+%    		Central Difference
+%    		
+%    		\begin{equation}
+%    			\frac{u_{n+1,i+1} - u_{n+1,i-1}}{2 \Delta x} = C_{2}
+%    		\end{equation}
+%    		
+%    		\begin{equation}
+%    			u_{n+1,i+1} = 2 C_{2} \Delta x + u_{n+1,i-1}
+%    		\end{equation}
+    		
+%    		\noindent
+%    		Where $i+1 = m$ and $m$ represents the last node (ghost node)
+%    		
+%    		\begin{equation}
+%    			u_{n+1,m} = 2 C_{2} \Delta x + u_{n+1,m-2}
+%    		\end{equation}
+%    		
+%    		\noindent
+%    		Plugging in
+%
+%		\begin{equation}
+%			-CFL * u_{n+1,m-2} + (1 + 2 CFL) * u_{n+1,m-1} - CFL * (2 C_{2} \Delta x + u_{n+1,m-2}) = u_{n,m-1} + q_{n,m-1} \Delta t
+%		\end{equation}    		
+    		
+    		\boxedeq{eq:implicitbc2}{-2CFL * u_{n+1,m-2} + (1 + 2 CFL) * u_{n+1,m-1} = u_{n,m-1} + q_{n,m-1} \Delta t + 2CFL * C_{2} \Delta x}
+    		
     		\noindent
-    		Central Difference
+    		The ghost node is then set according to Eq. \ref{eq:explicitbc2}, reproduced below as Eq. \ref{eq:implicitbc22}. \\
     		
-    		\begin{equation}
-    			\frac{u_{n+1,i+1} - u_{n+1,i-1}}{2 \Delta x} = C_{2}
-    		\end{equation}
-    		
-    		\begin{equation}
-    			u_{n+1,i+1} = 2 C_{2} \Delta x + u_{n+1,i-1}
-    		\end{equation}
+    		\boxedeq{eq:implicitbc22}{u_{n+1, m} = u_{n+1, m-2} + 2 \Delta X * C_{2}}	
     		
     		\noindent
-    		Where $i+1 = m$ and $m$ represents the last node (ghost node)
-    		
-    		\begin{equation}
-    			u_{n+1,m} = 2 C_{2} \Delta x + u_{n+1,m-2}
-    		\end{equation}
-    		
-    		\noindent
-    		Plugging in
+    		The final matrix equation which gives the temperatures for all the internal nodes at the next timestep is then fully defined per Eq. \ref{eq:implicitmatrix}, and the boundary conditions applied as in Eq. \ref{eq:implicitbc11} and Eq. \ref{eq:implicitbc22}.
 
-		\begin{equation}
-			-CFL * u_{n+1,m-2} + (1 + 2 CFL) * u_{n+1,m-1} - CFL * (2 C_{2} \Delta x + u_{n+1,m-2}) = u_{n,m-1} + q_{n,m-1} \Delta t
-		\end{equation}    		
-    		
-    		\boxedeq{}{-2CFL * u_{n+1,m-2} + (1 + 2 CFL) * u_{n+1,m-1} = u_{n,m-1} + q_{n,m-1} \Delta t + 2CFL * C_{2} \Delta x}
+		\begin{fleqn}
+			\begin{equation}
+			\label{eq:implicitmatrix}
+			\setlength{\arraycolsep}{3pt}
+				\begin{medsize}
+					\begin{bmatrix}
+						\begin{smallmatrix}
+							2*CFL + 1 & - CFL     & 0         & \dots  & \dots    & 0         \\[1.5em]
+							-CFL      & 2*CFL + 1 & -CFL      & \ddots & \ddots   & \vdots    \\[1.5em]
+							0         & -CFL      & 2*CFL + 1 & -CFL   & \ddots   & \vdots    \\[1.5em]
+							\vdots    & \ddots    & \ddots    & \ddots & \ddots   & 0         \\[1.5em]
+							\vdots    & \ddots    & \ddots    & -CFL   & 2CFL + 1 & -CFL      \\[1.5em]
+							0         & \dots     & \dots     & 0      & -2*CFL   & 2*CFL + 1 \\
+						\end{smallmatrix}
+					\end{bmatrix}
+					\begin{bmatrix}
+						\begin{smallmatrix}
+							u_{n+1, 2}   \\[1.5em]
+							u_{n+1, 3}   \\[1.5em]
+							u_{n+1, 4}   \\[1.5em]
+							\vdots       \\[1.5em]
+							u_{n+1, m-2} \\[1.5em]
+							u_{n+1, m-1}
+						\end{smallmatrix}
+					\end{bmatrix}
+					=
+					\begin{bmatrix}
+						\begin{smallmatrix}
+							u_{n, 2} + q_{n, 2} \Delta t + CFL * f_{BC1}             \\[1.5em]
+							u_{n, 3} + q_{n, 3} \Delta t                             \\[1.5em]
+							u_{n, 4} + q_{n, 4} \Delta t                             \\[1.5em]
+							\vdots                                                   \\[1.5em]
+							u_{n, m-2} + q_{n, m-2} \Delta t                         \\[1.5em]
+							u_{n, m-1} + q_{n, m-1} \Delta t + 2CFL * C_{2} \Delta x
+						\end{smallmatrix}
+					\end{bmatrix}
+				\end{medsize}
+			\end{equation} 
+		\end{fleqn}   		
     		
 		\pagebreak
 		
@@ -578,15 +667,11 @@ Submitted to: \\[0.5\baselineskip]
 %		\end{equation}
 		
 		\noindent
-		In addition to Eq. \ref{eq:delta}, the following (Eq. \ref{eq:delta2} are applied to Eq. \ref{eq:cn}.
+		In addition to Eq. \ref{eq:delta}, the following (Eq. \ref{eq:delta2}) are applied to Eq. \ref{eq:cn}.
 		
 		\begin{equation}
 		\label{eq:delta2}
-			\begin{split}
-				u_{n+1}(x + \Delta x) = u_{n+1,i+1} \\
-				u_{n+1}(x)            = u_{n+1,i} \\
-				u_{n+1}(x - \Delta x) = u_{n+1,i-1}
-			\end{split}
+			u_{n+1}(x + \Delta x) = u_{n+1,i+1}, \hphantom{xxxxx} u_{n+1}(x) = u_{n+1,i}, \hphantom{xxxxx} u_{n+1}(x - \Delta x) = u_{n+1,i-1}
 		\end{equation}
 		
 		\noindent
@@ -606,43 +691,60 @@ Submitted to: \\[0.5\baselineskip]
 %			CFL = K \frac{\Delta t}{(\Delta x)^{2}}
 %		\end{equation}
 		
-		\boxedeq{eq:cn2}{\frac{-CFL}{2} * u_{n+1,i-1} + (1 + CFL) * u_{n+1, i} - \frac{CFL}{2} * u_{n+1,i+1} = \\ \frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t}
+		\boxedeq{eq:cn2}{\begin{split}\frac{-CFL}{2} * u_{n+1,i-1} + (1 + CFL) * u_{n+1, i} - \frac{CFL}{2} * u_{n+1,i+1} = \\ \frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t\end{split}}
 		
 		\FloatBarrier
 		\begin{figure}[h]
 			\centering
 			\captionsetup{justification=centering}
-			\includegraphics[width=0.75\linewidth]{"Figures/Crank_Nicolson_Method"}
+			\includegraphics[width=0.65\linewidth]{"Figures/Crank_Nicolson_Method"}
 			\caption{Crank-Nicolson Scheme Template}
 			\label{fig:cn}
 		\end{figure}
 		\FloatBarrier
 		
+		\pagebreak
+		
 		\noindent
-		1) Dirilecht Condition at the Left Boundary x = 0:	\\
+		\textbf{Boundary Conditions}
 		
-		\begin{equation}
-			u(x=0, t) = u_{n+1, 1} = \begin{cases} 
-          					C_{1} * \frac{t}{t_{ramp}} & t\leq t_{ramp} \\
-          					C_{1}                      & t > t_{ramp}
-       					\end{cases} = f_{BC1}
-    		\end{equation}  		
-
-		\begin{equation}
-			\begin{split}
-			\frac{-CFL}{2} * f_{BC1} + (1 + CFL) * u_{n+1, i} - \frac{-CFL}{2} * u_{n+1,i+1} = \\ 
-			\frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t
-			\end{split}
-		\end{equation}
+		\noindent
+		1) To satisfy the Dirilecht Boundary Condition, Eq. \ref{eq:bc1} is inserted into the Crank-Nicolson scheme (Eq. \ref{eq:cn}) at the left boundary node to obtain Eq. \ref{eq:cnbc1}., which is then solved simultaneously with the remaining equations. Again, note that $f_{BC1}$ represents the value of the left boundary conditions as defined by Eq. \ref{eq:bc1}.
 		
-		\boxedeq{}{(1 + CFL) * u_{n+1, i} - \frac{CFL}{2} * u_{n+1,i+1} = \\ \frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t + \frac{CFL}{2} * f_{BC1}}    		
+%		 Dirilecht Condition at the Left Boundary x = 0:	\\
+%		
+%		\begin{equation}
+%			u(x=0, t) = u_{n+1, 1} = \begin{cases} 
+%          					C_{1} * \frac{t}{t_{ramp}} & t\leq t_{ramp} \\
+%          					C_{1}                      & t > t_{ramp}
+%       					\end{cases} = f_{BC1}
+%    		\end{equation}  		
+%
+%		\begin{equation}
+%			\begin{split}
+%			\frac{-CFL}{2} * f_{BC1} + (1 + CFL) * u_{n+1, i} - \frac{-CFL}{2} * u_{n+1,i+1} = \\ 
+%			\frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t
+%			\end{split}
+%		\end{equation}
+		
+		\boxedeq{eq:cnbc1}{\begin{split}(1 + CFL) * u_{n+1, i} - \frac{CFL}{2} * u_{n+1,i+1} = \\ \frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t + \frac{CFL}{2} * f_{BC1}\end{split}}    		
     		
-		\noindent
-		2) Neumann Condition at the Right Boundary x = L: \\
+    		\noindent
+		Additionally, the boundary node is defined as in Eq. \ref{eq:explicitbc1}, reproduced below as Eq. \ref{eq:cnbc11}
 		
-		\begin{equation}
-			\frac{\partial u}{\partial x}(x=L, t) = C_{2}
-    		\end{equation}
+		\boxedeq{eq:cnbc11}{u_{n + 1, 1} = \begin{cases} 
+          			C_{1} * \frac{t}{t_{ramp}} & t\leq t_{ramp} \\
+          			C_{1}                      & t > t_{ramp}
+       			\end{cases}}
+       			
+		\noindent
+		2) To satisfy the Neumann Condition, the First-Order Finite Difference Central Difference Scheme (Eq. \ref{eq:cds}) is applied with a ghost node to obtain Eq. \ref{eq:cnbc2} by plugging in Eq. \ref{eq:explicitbc2} into Eq. \ref{eq:cn}, where the ghost nodes is represented by $m$, the boundary node by $m-1$ etc.
+		 
+%		Neumann Condition at the Right Boundary x = L: \\
+%		
+%		\begin{equation}
+%			\frac{\partial u}{\partial x}(x=L, t) = C_{2}
+%    		\end{equation}
 %    		
 %    		\noindent
 %    		Forward Difference
@@ -676,55 +778,102 @@ Submitted to: \\[0.5\baselineskip]
 %			 \frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t + \frac{CFL}{2} * \big ( C_{2} \Delta x \big)}   		
 %    		
 %    		\pagebreak
+%    		
+%    		\noindent
+%    		Central Difference
+%    		
+%    		\begin{equation}
+%    			\frac{u_{n+1,i+1} - u_{n+1,i-1}}{2 \Delta x} = C_{2}
+%    		\end{equation}
+%    		
+%    		\begin{equation}
+%    			u_{n+1,i+1} = 2 C_{2} \Delta x + u_{n+1,i-1}
+%    		\end{equation}
+%    		
+%    		\noindent
+%    		Where $i+1 = m$ and $m$ represents the last node (ghost node)
+%    		
+%    		
+%    		\noindent
+%    		Plugging in
+%    		
+%    		\begin{equation}
+%    			\begin{split}
+%    			\frac{-CFL}{2} * u_{n+1,i-1} + (1 + CFL) * u_{n+1, i} - \frac{CFL}{2} * \big( 2 C_{2} \Delta x + u_{n+1,i-1} \big) = \\ 
+%    			\frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t
+%    			\end{split}
+%    		\end{equation}
     		
-    		\noindent
-    		Central Difference
-    		
-    		\begin{equation}
-    			\frac{u_{n+1,i+1} - u_{n+1,i-1}}{2 \Delta x} = C_{2}
-    		\end{equation}
-    		
-    		\begin{equation}
-    			u_{n+1,i+1} = 2 C_{2} \Delta x + u_{n+1,i-1}
-    		\end{equation}
-    		
-    		\noindent
-    		Where $i+1 = m$ and $m$ represents the last node (ghost node)
-    		
-    		\begin{equation}
-    			u_{n+1,m} = 2 C_{2} \Delta x + u_{n+1,m-2}
-    		\end{equation}
-    		
-    		\noindent
-    		Plugging in
-    		
-    		\begin{equation}
-    			\begin{split}
-    			\frac{-CFL}{2} * u_{n+1,i-1} + (1 + CFL) * u_{n+1, i} - \frac{CFL}{2} * \big( 2 C_{2} \Delta x + u_{n+1,i-1} \big) = \\ 
-    			\frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t
-    			\end{split}
-    		\end{equation}
-    		
-    		\boxedeq{}{-CFL * u_{n+1,i-1} + (1 + CFL) * u_{n+1, i} = \\ 
+    		\boxedeq{eq:cnbc2}{-CFL * u_{n+1,i-1} + (1 + CFL) * u_{n+1, i} = \\ 
     			\frac{CFL}{2} * u_{n,i-1} + (1 - CFL) * u_{n,i} + \frac{CFL}{2} * u_{n,i+1} + q_{n,1} \Delta t + \frac{CFL}{2} * \big( 2 C_{2} \Delta x \big)}
     		
+    		\noindent
+    		The ghost node is then set according to Eq. \ref{eq:explicitbc2}, reproduced below as Eq. \ref{eq:cnbc22}
+    		
+    		\boxedeq{eq:cnbc22}{u_{n+1,m} = 2 C_{2} \Delta x + u_{n+1,m-2}}
+    		
+    		\noindent
+    		The final matrix equation which gives the temperatures for all the internal nodes at the next timestep if then full defined per Eq. \ref{eq:cnmatrix}, and the boundary conditions applied as in Eq. \ref{eq:cnbc11} and Eq. \ref{eq:cnbc22}.
+    		
+    		\begin{fleqn}
+			\begin{equation}
+			\label{eq:cnmatrix}
+			\hspace*{-1cm}
+			\setlength{\arraycolsep}{3pt}
+				\begin{medsize}
+					\begin{bmatrix}
+						\begin{smallmatrix}
+							CFL + 1        & - \frac{CFL}{2}  & 0              & \dots           & \dots   & 0                   \\[1.5em]
+							-\frac{CFL}{2} & CFL + 1          & -\frac{CFL}{2} & \ddots          & \ddots  & \vdots              \\[1.5em]
+							0              & -\frac{CFL}{2}   & CFL + 1        & -\frac{CFL}{2}  & \ddots  & \vdots              \\[1.5em]
+							\vdots         & \ddots           & \ddots         & \ddots          & \ddots  & 0                   \\[1.5em]
+							\vdots         & \ddots           & \ddots         & -\frac{CFL}{2}  & CFL + 1 & -\frac{CFL}{2}      \\[1.5em]
+							0              & \dots            & \dots          & 0               & -CFL    & CFL + 1 \\
+						\end{smallmatrix}
+					\end{bmatrix}
+					\begin{bmatrix}
+						\begin{smallmatrix}
+							u_{n+1, 2}   \\[1.5em]
+							u_{n+1, 3}   \\[1.5em]
+							u_{n+1, 4}   \\[1.5em]
+							\vdots       \\[1.5em]
+							u_{n+1, m-2} \\[1.5em]
+							u_{n+1, m-1}
+						\end{smallmatrix}
+					\end{bmatrix}
+					=
+					\begin{bmatrix}
+						\begin{smallmatrix}
+							\frac{CFL}{2} * u_{n, 1} + (1-CFL) * u_{n, 2} + \frac{CFL}{2} * u_{n, 3} + q_{n, 2} \Delta t + CFL * f_{BC1}             \\[1.5em]
+							\frac{CFL}{2} * u_{n, 2} + (1-CFL) * u_{n, 3} + \frac{CFL}{2} * u_{n, 4} + q_{n, 3} \Delta t                             \\[1.5em]
+							\frac{CFL}{2} * u_{n, 3} + (1-CFL) * u_{n, 4} + \frac{CFL}{2} * u_{n, 5} + q_{n, 4} \Delta t                             \\[1.5em]
+							\vdots                                                   \\[1.5em]
+							\frac{CFL}{2} * u_{n, m-3} + (1-CFL) * u_{n, m-2} + \frac{CFL}{2} * u_{n, m-1} + q_{n, m-2} \Delta t                         \\[1.5em]
+							\frac{CFL}{2} * u_{n, m-2} + (1- CFL) * u_{n, m-1} + \frac{CFL}{2} * u_{n, m} + q_{n, m-1} \Delta t + CFL * C_{2} \Delta x
+						\end{smallmatrix}
+					\end{bmatrix}
+				\end{medsize}
+			\end{equation} 
+		\end{fleqn}   		
+		
 		\pagebreak
 		
 		\section{Stability}
 		
 		\noindent
-		A stability analysis indicates that the Explicit Euler Method must satisfy Von Neumann stability, which is defined below in Eq. \ref{eq:vonneumann}, making the method conditionally stable. However, the Implicit Euler Method and the Crank-Nicolson methods are unconditionally stable, and do not need to satisfy the condition in Eq. \ref{eq:vonneumann}. \\
-		
-		\noindent
-		This stability behavior was verified by running each method multiple times with a domain length of $L = 2*\pi$ over a time period of $T_{max} = 40 s$. Each run focused on changing the number of spacial nodes ($NX$) or the number of time steps ($NT$) in order to change the spacial resolution ($\Delta x$) or the temporal resolution ($\Delta t$) systematically in order to slowly the Courant number (CFD) defined in Eq. \ref{eq:cfl}. As seen in Table \ref{tbl:stability}, the Explicit Euler method is only stable for Courant numbers (CFL) less than $\frac{1}{2}$, while the Implicit Euler and Crank-Nicolson methods are unconditionally stable at all Courant numbers (CFL).\\
-		
-
+		A stability analysis indicates that the Explicit Euler Method must satisfy Von Neumann stability, defined below in Eq. \ref{eq:vonneumann}, making the method conditionally stable. However, the Implicit Euler and Crank-Nicolson methods are unconditionally stable, and do not need to satisfy this condition.
 		
 		\begin{equation}
 		\label{eq:vonneumann}
 			CFL = K\frac{\Delta t}{\Delta x^{2}} \leq \frac{1}{2}
-		\end{equation}	
-
+		\end{equation}
+		
+		\noindent
+		This stability behavior was verified by running each method multiple times with a domain length of $L = 2*\pi$ over a time period of $T_{max} = 40 s$. Each run focused on changing the number of spacial nodes ($NX$) or the number of time steps ($NT$) in order to change the spacial resolution ($\Delta x$) or the temporal resolution ($\Delta t$) systematically in order to slowly increase the Courant number (CFD) defined in Eq. \ref{eq:cfl}. As seen in Table \ref{tbl:stability}, the Explicit Euler method is only stable for Courant numbers (CFL) less than $\frac{1}{2}$, while the Implicit Euler and Crank-Nicolson methods are unconditionally stable at all Courant numbers (CFL).\\
+		
+		\noindent
+		The fact that the Explicit Euler method is only conditionally stable for small Courant numbers, indicates that to resolve a fine spatial mesh (large NX) with this method would require an even finer timestep (since Courant number scales with $\frac{\Delta t}{\Delta x^{2}}$), resulting in slow computation. For computations where it is desired to investigate the steady-state behavior and temperature profiles over a longer period of time, this makes the Implicit Euler and Crank-Nicolson methods attractive in this regard as well, in addition to their unconditional stability.
+		
 		\FloatBarrier
 		\begin{table}[h]
 			\caption{Explicit Euler Method Stability Tests}
@@ -733,19 +882,18 @@ Submitted to: \\[0.5\baselineskip]
 				\hline
 				\makecell{Nodes \\ $NX$} & \makecell{Time Steps \\ $NT$} & \makecell{$K$} & $\Delta t$ & $\Delta x$ & $CFL$ & \makecell{Explicit Euler \\ Stability} & \makecell{Implicit Euler \\ Stability} & \makecell{Crank-Nicolson \\ Stability} \\
 				\hline \rowcolor{Gray} 
-				20  & 500 & 0.1 & 0.08 & 0.314 & 0.081 & Stable & Stable & Stable  \\
-				\hline
 				20  & 200 & 0.1 & 0.20 & 0.314 & 0.203 & Stable & Stable & Stable  \\
-				\hline \rowcolor{Gray} 
+				\hline
 				20  & 100 & 0.1 & 0.40 & 0.314 & 0.405 & Stable & Stable & Stable  \\
-				\hline
+				\hline  \rowcolor{Gray} 
 				20  & 50  & 0.1 & 0.80 & 0.314 & 0.811 & Unstable & Stable & Stable \\
-				\hline \rowcolor{Gray}
+				\hline 
 				50  & 50  & 0.1 & 0.80 & 0.126 & 5.066 & Unstable & Stable & Stable \\
-				\hline
+				\hline \rowcolor{Gray}
 				100 & 50  & 0.1 & 0.80 & 0.063 & 20.26 & Unstable & Stable & Stable \\
 				\hline
 			\end{tabular}
+			\label{tbl:stability}
 		\end{table}
 		\FloatBarrier
 		
@@ -754,17 +902,20 @@ Submitted to: \\[0.5\baselineskip]
 		\subsection{Error Evolution Over Time}
 
 		\noindent
-		To visualize and understand the accuracy of the three methods, each was ran and compared to a baseline "analytical" case (performed using Crank-Nicolson with small timestep and high spacial resolution). This was done for the case with no source function ($q(x,t) = 0$) and for the case with the source function ($q(x, t)$) defined by Eq. \ref{eq:hsource}. The solutions were then examined at the final time of $T = 40 s$ and plotted against one another. Additionally, the L-2 Norm error (compared to the baseline "analytical" solution and defined by Eq. \ref{eq:L2Norm}) at each time step was calculated and plotted over time to visualize how the error grows for each method as the solution evolves further from initial conditions.		
+		To visualize and understand the accuracy of the three methods and their implementation, each was ran and compared to an "analytical" case (performed using Crank-Nicolson with small timestep and high spacial resolution). This was done for the case with no source function ($q(x,t) = 0$) and for the case with source function ($q(x, t)$) defined by Eq. \ref{eq:hsource}. The solutions were then examined at steady-state (defined at $T = 40 s$). Additionally, the L-2 Norm error (compared to the "analytical" solution and defined by Eq. \ref{eq:L2Norm}) at each time step was calculated and plotted over time to visualize how the error grows for each method as the solution evolves further from initial conditions.		
 		
 		\begin{equation}
 		\label{eq:L2Norm}
-			Error = \sqrt{\sum_{j=1}^{n} R_{j}^{2}} = \sqrt{\sum_{j=1}^{n} (U_{j} - U_{j, analytical})^{2}}
+			Error = \sqrt{\sum_{j=1}^{n} \frac{R_{j}^{2}}{N_{X}}} = \sqrt{\sum_{j=1}^{n} \frac{(U_{j} - U_{j, analytical})^{2}}{N_{X}}}
 		\end{equation}
+		
+		\noindent
+		Note: $NX$ represents the number of spatial nodes and was used to normalize the residual
 		
 		\pagebreak
 		
 		\noindent
-		When no source term is present, it can clearly be seen in Figure \ref{fig:nosource} that the Explicit Euler method results in the largest error while the Implicit Euler and Crank-Nicolson methods perform much better. After letting the solution run for $T = 40 s$ (Figure \ref{fig:compnosource}), this can most clearly be seen at the right boundary, where the Neumann boundary condition (See Eq. \ref{eq:bc2}) has been enforced. Additionally, as seen in Figure \ref{fig:evolutionnosource}, as the solution evolves further from its initial condition, the Explicit Euler method increases in error proportional to $\frac{1}{T}$ while the Implicit and Crank-Nicolson methods increase in error proportional to $\frac{1}{T^{2}}$.	
+		When no source term is present, the steady-state solution is simply a line with y-intercept = $C_{1} = 1$ and slope $C_{2} = -0.2$. As seen in Figure \ref{fig:compnosource}, all three methods converge to this steady-state solution in agreement with the pseudo-analytical solution obtained with fine spatial and temporal resolutions. All three methods have an initial spike in error due to the left boundary condition increasing from $0$ to $C_{1}$ over the time $t = 0 \rightarrow t=t_{ramp}$ as defined in Eq. \ref{eq:bc1}, and then the error decreases as the solution approaches a steady-state (Figure \ref{fig:evolutionnosource}).
 		
 		\FloatBarrier
 		\begin{figure}[!h]
@@ -790,7 +941,7 @@ Submitted to: \\[0.5\baselineskip]
 		\FloatBarrier
 		
 		\noindent
-		When a source term is present, as defined by Eq.\ref{eq:hsource}, a similar pattern is observed (Figure \ref{fig:source}). At $Time = 40 s$ (Figure \ref{fig:compsource}), The Explicit Euler method has the largest error, while the Implicit Euler and Crank-Nicolson methods have the smallest error. However, examining Figure \ref{fig:evolutionsource} indicates the total error oscillates at the same frequency of the source function
+		When a source term is present ($q(x,t)$ defined by Eq.\ref{eq:hsource}), the steady-state solution (again defined as $T = 40s$) is the downward sloping temperature profile seen in Figure \ref{fig:compnosource} now superimposed by the temporal oscillation due to the source term. As seen in Figure \ref{fig:compsource}, all three methods converge closely to the pseudo-analytical solution at $T = 40 s$, and satisfy the imposed boundary conditions, verifying the accuracy of the numerical model with the addition of an arbitrary source function. Interestingly, the error of all three methods oscillates with the angular frequency of the source function ($1 \frac{rad}{s}$) and similar errors over time are observed for all three methods (Figure \ref{fig:evolutionsource}). However, the error is observed to gradually decrease as the solution approaches steady-state.
 			
 		
 		\FloatBarrier
@@ -819,30 +970,63 @@ Submitted to: \\[0.5\baselineskip]
 		\pagebreak
 		
 		\subsection{Spatial Resolution}
+
+		\noindent
+		The error (as defined by the L-2 norm in Eq. \ref{eq:L2Norm}) of the three methods as a function of changing spatial resolution was investigated by again calculating a pseudo-analytical solution with extremely fine spatial and temporal resolution using the Crank-Nicolson method, and comparing the results of each method with varying number of spatial nodes. The comparison was performed at the steady-state ($T = 40 s$) and was performed for both the case without a source term (Figure \ref{fig:spatialnosource}) and the case with the source term defined as in Eq. \ref{eq:hsource} (Figure \ref{fig:spatialsource}).	Each case was run at 20 different spatial node counts, varying from 8 nodes to 256 nodes ($2^{3} - 2^{8}\ nodes\ \rightarrow \Delta x = 7.9*10^{-1}\ - 2.5*10^{-2}$), and a constant number of timesteps ($2^{12} = 4096\ timesteps \rightarrow \Delta t = 9.77 * 10^{-3} s$) so that the error could be investigated as solely a function of changing spatial step size. The results are presented on logarithmic axes below in Figure \ref{fig:spatial}. For comparison, the first-order and second-order curves with respect to spatial resolution ($\Delta x$) were additionally plotted.
 		
 		\FloatBarrier
 		\begin{figure}[h]
-			\centering
-			\captionsetup{justification=centering}
-			\includegraphics[width=\linewidth]{"Figures/MATLAB/ConstantDTSource"}
-			\caption{Error as a Function of Spacial Step}
-			\label{fig:explicit}
+		\captionsetup{justification=centering}
+		\centering
+			\begin{subfigure}{.45\textwidth}
+				\centering
+				\includegraphics[width=\linewidth]{"Figures/MATLAB/ConstantDTNoSource"}
+				\caption{Error with No Source Term}
+				\label{fig:spatialnosource}
+			\end{subfigure}
+			\begin{subfigure}{.45\textwidth}
+				\centering
+				\includegraphics[width=\linewidth]{"Figures/MATLAB/ConstantDTSource"}
+				\caption{Error with Source Term}
+				\label{fig:spatialsource}
+			\end{subfigure}
+		\caption{Error as a Function of Spatial Step}
+		\label{fig:spatial}
 		\end{figure}		
 		\FloatBarrier
+
+		\noindent
+		Since the Heat Equation (Eq. \ref{eq:heat}) was discretized spatially using the Second-Order Central Difference Scheme (Eq. \ref{eq:fd2}) for all three methods, analysis of the truncation error from the Taylor expansion indicates that the error should be of order O($\Delta x^{2}$). This would translate to a slope of $2$ on a log-log plot, and the matching result can be seen above for both the no source and source case in Figure \ref{fig:spatial} for all three methods, confirming that all three methods have error of order O($\Delta x^{2}$).	
 		
 		\pagebreak
 		
 		\subsection{Temporal Resolution}
+
+		\noindent
+		The error (again defined by Eq. \ref{eq:L2Norm}) of the three methods was next calculated as a function of changing temporal resolution using the psuedo-analytical solution calculated before. The comparison was performed again at steady-state ($T = 40 s$) and was performed for both the case without a source term (Figure \ref{fig:temporalnosource}) and with a source term as defined in Eq. \ref{eq:hsource} (Figure \ref{fig:temporalsource}). Each case was again run 20 times, this time at various timestep counts, which varied from 8 timesteps to 2048 timesteps ($2^{3}\ timesteps - 2^{11}\ timesteps\ \rightarrow	\Delta t = 5 s - 1.9 * 10^{-1} s$) and a constant number of spatial nodes ($2^{6}\ nodes\ \rightarrow \Delta x = 9.8*10^{-1} $). A finer spatial resolution was not chosen so that the Von Neumann stability criteria (Eq. \ref{eq:vonneumann}) would be able to be satisfied for the Explicit method runs (a very fine mesh would require an unrealistically small timestep for the Explicit method to remain stable for any of the 20 runs). However, this spatial resolution was maintained as constant for all runs so that the error as a function of solely temporal resolution could be investigated. The results are presented on logarithmic axes below in Figure \ref{fig:temporal}. For comparison, the first-order and second-order curves with respect to temporal resolution ($\Delta t$) were additionally plotted.
 		
 		\FloatBarrier
 		\begin{figure}[h]
-			\centering
-			\captionsetup{justification=centering}
-			\includegraphics[width=\linewidth]{"Figures/MATLAB/ConstantDXSource"}
-			\caption{Error as a Function of Time Step}
-			\label{fig:explicit}
+		\captionsetup{justification=centering}
+		\centering
+			\begin{subfigure}{.45\textwidth}
+				\centering
+				\includegraphics[width=\linewidth]{"Figures/MATLAB/ConstantDXNoSource"}
+				\caption{Error as a Function of Temporal Step with No Source Term}
+				\label{fig:temporalnosource}
+			\end{subfigure}
+			\begin{subfigure}{.45\textwidth}
+				\centering
+				\includegraphics[width=\linewidth]{"Figures/MATLAB/ConstantDXSource"}
+				\caption{Error as a Function of Temporal Step with Source Term}
+				\label{fig:temporalsource}
+			\end{subfigure}
+		\label{fig:temporal}
 		\end{figure}		
 		\FloatBarrier
+		
+		\noindent
+		Since the Heat Equation (Eq. \ref{eq:heat}) was discretized temporally using a simple First-Order Forward-Difference Scheme		
 		
 		\pagebreak
 		

@@ -38,7 +38,7 @@ function U = NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGM
     % Time Domain
     TMAX = TM;                              % End Time of Simulation
     DT = TMAX ./ NT;                         % DT Calculation
-    TIMESTEPS = TMAX ./ DT + 1;              % Number of Time Steps
+    TIMESTEPS = round(TMAX ./ DT + 1, 0);              % Number of Time Steps
     T = linspace(0, TMAX, TIMESTEPS);       % Time Vector
     
     % Calculate CFL Number     
