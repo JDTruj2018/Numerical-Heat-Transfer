@@ -38,7 +38,7 @@ function U = NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGM
     CFL = (DT .* K) ./ (DX .* DX);                  % Multiplication Factor K (DT / DX^2)
     
     % Print Out Simulation Info
-    if SCHEME == 0; fprintf('Explicit Method:\n');
+    if SCHEME == 0; fprintf('Explicit Method:\n')};
     elseif SCHEME == 1; fprintf('Implicit Method:\n');
     elseif SCHEME == 2; fprintf('Crank-Nicolson Method:\n');
     end
@@ -140,14 +140,24 @@ function U = NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGM
             
             % Boundary Conditions
             fBC1 = C1 .* (CURRENT_T / TIME_RAMP) .* (CURRENT_T <= TIME_RAMP) + C1 .* (CURRENT_T > TIME_RAMP);
-            LOWER(1) = 0; RHS(1) = fBC1; RHS(2) = RHS(2) + CFL .* fBC1;
+            LOWER(1) = 0; 
+            RHS(1) = fBC1;
+            RHS(2) = RHS(2) + CFL .* fBC1;
+            
+            % Forward Difference Scheme
+            % DIAG(NODES + 1) = CFL + 1;
+  RHS(NODES + 1) = RHS(NODES + 1) + C2 .* CFL .* DX;
             
             % Central Difference Scheme
-            LOWER(NODES) = -2 .* CFL; RHS(NODES + 1) = RHS(NODES + 1) + 2 .* C2 .* CFL .* DX;
+            LOWER(NODES) = -2 .* CFL;
+            RHS(NODES + 1) = RHS(NODES + 1) + 2 .* C2 .* CFL .* DX;
             
             MA = sparse([LOWERI, DIAGI, UPPERI], [LOWERJ, DIAGJ, UPPERJ], [LOWER, DIAG, UPPER], NODES + 1, NODES + 1);
             
             U(n + 1, 1:end-1) = MA \ RHS;
+            
+            % Forward Difference Scheme
+            % U(n + 1, end) = U(n + 1, end - 1) + C2 .* DX;
             
             % Central Difference Scheme
             U(n + 1, end) = U(n + 1, end - 2) + 2 .* C2 .* DX;
@@ -165,16 +175,12 @@ function U = NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGM
 
             suptitle(['Time = ', num2str(CURRENT_T), ' s']); pause(0.01);
         end
-      
-        
-        
-        
-        
-        
         
     % Crank-Nicolson Scheme
     elseif SCHEME == 2
-        LOWER = zeros(1, NODES); DIAG  = zeros(1, NODES + 1); UPPER = zeros(1, NODES);
+        LOWER = zeros(1, NODES);
+        DIAG  = zeros(1, NODES + 1);
+        UPPER = zeros(1, NODES);
         
         LOWERI = 2:NODES + 1; LOWERJ = 1:NODES;
         DIAGI = 1:NODES + 1; DIAGJ = 1:NODES + 1;
@@ -183,14 +189,20 @@ function U = NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGM
         DIAG(1) = 1; UPPER(1) = 0;
         
         for ii = 2:NODES
-            LOWER(ii) = -CFL ./ 2; DIAG(ii) = CFL + 1; UPPER(ii) = -CFL ./ 2;
+            LOWER(ii) = -CFL ./ 2;
+            DIAG(ii) = CFL + 1;
+            UPPER(ii) = -CFL ./ 2;
         end
         
         DIAG(NODES + 1) = CFL + 1;
         
         % Iterate Until TMAX
         while CURRENT_T < TMAX - eps
-            CURRENT_T = CURRENT_T + DT; TIMESTEP = TIMESTEP + 1; n = TIMESTEP;
+            CURRENT_T = CURRENT_T + DT;
+            TIMESTEP = TIMESTEP + 1;
+
+            n = TIMESTEP;
+            
             RHS = zeros(NODES + 1, 1);
             
             % Crank-Nicolson Method
@@ -200,15 +212,25 @@ function U = NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGM
             
             % Boundary Conditions
             fBC1 = C1 .* (CURRENT_T / TIME_RAMP) .* (CURRENT_T <= TIME_RAMP) + C1 .* (CURRENT_T > TIME_RAMP);
-            LOWER(1) = 0; RHS(1) = fBC1; RHS(2) = RHS(2) + CFL .* fBC1 ./ 2;
+            LOWER(1) = 0; 
+            RHS(1) = fBC1;
+            RHS(2) = RHS(2) + CFL .* fBC1 ./ 2;
+            
+            % Forward Difference Scheme
+            % DIAG(NODES + 1) = CFL ./ 2 + 1;
+            % RHS(NODES + 1) = RHS(NODES + 1) + C2 .* CFL .* DX ./ 2;
             
             % Central Difference Scheme
-            LOWER(NODES) = -CFL; RHS(NODES + 1) = RHS(NODES + 1) + C2 .* CFL .* DX;
+            LOWER(NODES) = -CFL;
+            RHS(NODES + 1) = RHS(NODES + 1) + C2 .* CFL .* DX;
             
             MA = sparse([LOWERI, DIAGI, UPPERI], [LOWERJ, DIAGJ, UPPERJ], [LOWER, DIAG, UPPER], NODES + 1, NODES + 1);
             
             U(n + 1, 1:end-1) = MA \ RHS;
-
+            
+            % Forward Difference Scheme
+            % U(n + 1, end) = U(n + 1, end - 1) + C2 .* DX;
+            
             % Central Difference Scheme
             U(n + 1, end) = U(n + 1, end - 2) + 2 .* C2 .* DX;
             
@@ -216,14 +238,20 @@ function U = NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGM
             figure(fTemperature);
 
             % Temperature Profile
-            subplot(211); plot(X, U(n + 1, :), 'o-'); axis([0 LENGTH -2 2]);
+            subplot(211);
+            plot(X, U(n + 1, :), 'o-');
             xlabel('X', 'FontSize', 14); ylabel('Temperature [u]', 'Fontsize', 14);
-            
-            % Heat Source Profile
-            subplot(212); plot(X, Q(n + 1, :), 'o-'); axis([0 LENGTH -QMAX QMAX]);
-            xlabel('X', 'FontSize', 14); ylabel('Heat Source [Q]', 'Fontsize', 14);
+            axis([0 LENGTH -2 2]);
 
-            suptitle(['Time = ', num2str(CURRENT_T), ' s']); pause(0.01);
+            % Heat Source Profile
+            subplot(212);
+            plot(X, Q(n + 1, :), 'o-');
+            xlabel('X', 'FontSize', 14); ylabel('Heat Source [Q]', 'Fontsize', 14);
+            axis([0 LENGTH -QMAX QMAX]);
+
+            suptitle(['Time = ', num2str(CURRENT_T), ' s']);
+            
+            pause(0.01);
         end
     end
     

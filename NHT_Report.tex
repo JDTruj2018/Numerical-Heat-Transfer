@@ -162,7 +162,7 @@ Submitted to: \\[0.5\baselineskip]
 		\textbf{Initial Conditions}
 		
 		\noindent
-		The initial condition will be assumed that the temperature field, $u(x, t = 0)$, is zero at all points in the domain, per Eq. \ref{eq:init}.
+		The initial condition will be assumed to be a zero temperature field at all points in the domain, per Eq. \ref{eq:init}.
 		
 		\begin{equation}
 		\label{eq:init}
@@ -173,7 +173,7 @@ Submitted to: \\[0.5\baselineskip]
 		\textbf{Boundary Conditions}
 
 		\noindent
-		The boundary conditions were defined as "fixed-free" with the fixed (Dirilecht) boundary condition applied at $x = 0$ and the free (Neumann) boundary condiiton applied at $x = L$ per Eq. \ref{eq:bc1} and Eq. \ref{eq:bc2}, respectively. \\
+		The boundary conditions were defined as "fixed-free" with the fixed (Dirilecht) boundary condition, with an initial linearly ramped increase, applied at $x = 0$ and the free (Neumann) boundary condiiton applied at $x = L$ per Eq. \ref{eq:bc1} and Eq. \ref{eq:bc2}, respectively. \\
 		
 		\noindent
 		Dirilecht Condition at the Left Boundary x = 0:
@@ -224,16 +224,17 @@ Submitted to: \\[0.5\baselineskip]
 		The Nuemann Boundary Condition ($\frac{\partial u}{\partial x}$) on the right ($x = L$) was set by the constant  $C_{2} = -0.2$. This resulted in the boundary condition described by Eq. \ref{eq:bc2}. \\
 		
 		\noindent
-		The source function (Eq. \ref{eq:hsource}) is defined to have a maximum amplitude of $Q_{max} = 1$, a frequency of $\omega = q \frac{rad}{s}$ and a distribution (standard deviation) of $sigma = 0.2 * L$. \\		
-		
-		\noindent
-		A table summarizing important parameters used is presented below. \\
-		
+		The source function (Eq. \ref{eq:hsource}) is defined to have a maximum amplitude of $Q_{max} = 1$, a frequency of $\omega = 1 \frac{rad}{s}$ and a distribution (standard deviation) of $sigma = 0.2 * L$.
+%		
+%		\noindent
+%		A table summarizing important parameters used is presented below. \\
+%		
 		\FloatBarrier
 		\begin{table}[h]
 			\caption{Heat Equation Parameters and Boundary Conditions}
+			\label{tbl:parameters}
 			\centering
-			\begin{tabular}{|c|c|}
+			\resizebox{0.5\textwidth}{!}{\begin{tabular}{|c|c|}
 				\hline
 				Length of Domain [$L$] & $2\pi$ \\
 				\hline
@@ -249,22 +250,24 @@ Submitted to: \\[0.5\baselineskip]
 				\hline
 				Frequency [$\omega$] & $1 \frac{rad}{s}$ \\
 				\hline
-				Distribution of Heat Source [$\sigma$] & $0.2 * L$ \\
-				\hline
-			\end{tabular}
+				Distribution of Heat Source [$\sigma$] & $0.2 * L = \frac{2\pi}{5}$ \\
+				\hline			\end{tabular}}
 		\end{table}
 		\FloatBarrier
 		
 		\section{Finite Difference Schemes}
 		
 		\noindent
-		For Eq. \ref{eq:cds} and Eq. \ref{eq:fd2}, at time t, we define the following $u^{(n)} = \frac{\partial^{n} u}{\partial x^{n}}$  \\
+		The following finite difference schemes are used to spatially discretize the one-dimensional heat equation. Note that each has error of order O($\Delta x^{2}$). Note that the one-dimensional heat equation will be discretized temporally by either a forward, backwards, or central difference scheme depending on the whether the Explicit Euler, Implicit Euler, or Crank-Nicolson method is used, respectively. \\
+		
+%		\noindent
+%		For Eq. \ref{eq:cds} and Eq. \ref{eq:fd2}, at time t, we define the following $u^{(n)} = \frac{\partial^{n} u}{\partial x^{n}}$  \\
 		
 		\noindent
-		\textbf{First-Order Finite Difference: Central Difference Scheme}
+		\textbf{First-Order Central Difference Scheme}
 		
 		\noindent
-		The Central Difference Scheme for First-Order Finite Differences is used to apply the Nuemann boundary condition (Eq. \ref{eq:bc2}) using a ghost node located at $L + dx$. The scheme is defined as per Eq. \ref{eq:cds}
+		The First-Order Central Difference Scheme is used to apply the Nuemann boundary condition (Eq. \ref{eq:bc2}) using a ghost node located at $L + dx$. The scheme is defined as per Eq. \ref{eq:cds} and has truncation error of order O($\Delta x^{2}$).
 		
 %		\noindent
 %		Taylor Expansions
@@ -288,10 +291,10 @@ Submitted to: \\[0.5\baselineskip]
 		\boxedeq{eq:cds}{u^{(1)} = \frac{u(x + \Delta x) - u(x - \Delta x)}{2 \Delta x} + O(\Delta x^{2})}
 		
 		\noindent
-		\textbf{Second Order Finite Difference}
+		\textbf{Second-Order Central Difference Scheme}
 		
 		\noindent
-		The Second-Order Finite Difference Scheme is used to discretize the spatial term $\frac{\partial^{2}u}{\partial x}$ for use in the Explicit Euler, Implicit Euler, and Crank-Nicolson solvers. The scheme is defined as per Eq. \ref{eq:fd2}.
+		The Second-Order Finite Difference Scheme is used to discretize the spatial term $\frac{\partial^{2}u}{\partial x}$ for use in the Explicit Euler, Implicit Euler, and Crank-Nicolson solvers. The scheme is defined as per Eq. \ref{eq:fd2} and has truncation error of order O($\Delta x^{2}$).
 		
 %		\noindent
 %		Taylor Expansions
@@ -309,13 +312,12 @@ Submitted to: \\[0.5\baselineskip]
 %		\end{equation}	
 		
 		\boxedeq{eq:fd2}{u^{(2)}(x) = \frac{u(x + \Delta x) - 2 u(x) + u(x - \Delta x)}{(\Delta x)^{2}} + O(\Delta x^{2})}
-		\pagebreak
 		
 		\noindent
 		\section{Explicit Euler}
 
 		\noindent
-		The Explicit Euler scheme is defined as the following, where we let $n$ denote the time step, and $i$ denote the grid point:
+		The Explicit Euler scheme is defined as the following (Eq. \ref{eq:explicit}), where we let $n$ denote the time step, and $i$ denote the grid point:
 		
 		\begin{equation}
 		\label{eq:explicit}
@@ -325,7 +327,7 @@ Submitted to: \\[0.5\baselineskip]
 		\vspace{1em}
 		
 		\noindent
-		Where the temperature across the domain at the next time step is calculated directly from the temperature field across the domain at the current time step as seen in Figure \ref{fig:explicit}. \\
+		Where the temperature at the next time step is calculated directly from the temperature field at the current time step as seen in Figure \ref{fig:explicit} to give a Forward Difference in time (O($\Delta t$)). \\
 		
 		\noindent
 		Expanding Eq. \ref{eq:explicit}, where $f(t_{n}, u_{n})$ is given by the one-dimensional heat equation (Eq. \ref{eq:heat}) gives:
@@ -400,7 +402,7 @@ Submitted to: \\[0.5\baselineskip]
        					\end{cases}}
 		
 		\noindent
-		2) To satisfy the Neumann Boundary Condition, the First-Order Finite Difference Central Difference Scheme (Eq. \ref{eq:cds}) is applied with a ghost node to obtain Eq. \ref{eq:explicitbc2}, where the ghost node is represented by $m$, the boundary node by $m - 1$ etc.
+		2) To satisfy the Neumann Boundary Condition, the First-Order Central Difference Scheme (Eq. \ref{eq:cds}) is applied with a ghost node to obtain Eq. \ref{eq:explicitbc2}, where the ghost node is represented by $m$, the boundary node by $m - 1$ etc.
 		
 		\boxedeq{eq:explicitbc2}{u_{n+1, m} = u_{n+1, m-2} + 2 \Delta X * C_{2}}		
 		
@@ -408,7 +410,7 @@ Submitted to: \\[0.5\baselineskip]
 		\section{Implicit Euler}
 		
 		\noindent
-		The Implicit Euler scheme is defined as the following, where we let $n$ denote the time step, and $i$ denote the grid point:
+		The Implicit Euler (Central in space, Backwards in time) scheme is defined as the following, where we let $n$ denote the time step, and $i$ denote the grid point:
 		
 		\begin{equation}
 		\label{eq:implicit}
@@ -481,7 +483,7 @@ Submitted to: \\[0.5\baselineskip]
 		\textbf{Boundary Conditions} \\
 		
 		\noindent
-		1) To satisfy the Dirilecht Boundary Condition, Eq. \ref{eq:bc1} is inserted into the Implicit Euler scheme (Eq. \ref{eq:implicit}) at the left boundary node to obtain the Eq \ref{eq:implicitbc1}, which is then solved simultaneously with the remaining equations. Note that $f_{BC1}$ represents the value of the left boundary condition as defined by Eq. \ref{eq:bc1}.
+		1) To satisfy the Dirilecht Boundary Condition, the value at the left boundary (determined from Eq. \ref{eq:bc1}) is inserted into the Implicit Euler scheme (Eq. \ref{eq:implicit}) at the left boundary node to obtain the Eq \ref{eq:implicitbc1}, which is then solved simultaneously with the remaining equations. Note that $f_{BC1}$ represents the value of the left boundary condition as defined by Eq. \ref{eq:bc1}.
 %		 
 %		Dirilecht Condition at the Left Boundary x = 0:	\\
 %		
@@ -501,13 +503,13 @@ Submitted to: \\[0.5\baselineskip]
 		\noindent
 		Additionally, the boundary node is defined as in Eq. \ref{eq:explicitbc1}, reproduced below as Eq. \ref{eq:implicitbc11}
 		
-		\boxedeq{eq:implicitbc11}{u_{n + 1, 1} = \begin{cases} 
+		\boxedeq{eq:implicitbc11}{f_{BC1} = u_{n + 1, 1} = \begin{cases} 
           			C_{1} * \frac{t}{t_{ramp}} & t\leq t_{ramp} \\
           			C_{1}                      & t > t_{ramp}
        			\end{cases}}
 		
 		\noindent
-		2) To satisfy the Neumann Condition, the First-Order Finite Difference Central Difference Scheme (Eq. 6) is applied with a ghost node to obtain Eq. \ref{eq:implicitbc2} by plugging in Eq. \ref{eq:explicitbc2} into Eq. \ref{eq:implicit2}, where the ghost node is represented by $m$, the boundary node by $m - 1$ etc.
+		2) To satisfy the Neumann Condition, the First-Order Central Difference Scheme (Eq. \ref{eq:cds}) is applied with a ghost node to obtain Eq. \ref{eq:implicitbc2} by plugging Eq. \ref{eq:explicitbc2} into Eq. \ref{eq:implicit2}, where the ghost node is represented by $m$, the boundary node by $m - 1$ etc.
 		
 %		Neumann Condition at the Right Boundary x = L: \\
 %		
@@ -631,7 +633,7 @@ Submitted to: \\[0.5\baselineskip]
 		\section{Crank-Nicolson}
 		
 		\noindent
-		The Crank-Nicolson scheme is defined as the following, where we let n denote the time step, and i denote the grid point
+		The Crank-Nicolson (Central in space, Central in time) scheme is defined as the following, where we let n denote the time step, and i denote the grid point
 		
 		\begin{equation}
 			u_{n+1,i} = u_{n,i} + \Delta t * \Big[ \frac{1}{2} f(t_{n}, u_{n}) + \frac{1}{2} f(t_{n+1}, u_{n+1}) + q_{n} \Big]_{i}
@@ -675,7 +677,7 @@ Submitted to: \\[0.5\baselineskip]
 		\end{equation}
 		
 		\noindent
-		We still define the CFL number as in Eq. \ref{eq:cfl}. After some algebra, we get the following equation (Eq. \ref{eq:cn2}) for the Implicit Euler Scheme.
+		We still define the CFL number as in Eq. \ref{eq:cfl}. After some algebra, we get the following equation (Eq. \ref{eq:cn2}) for the Crank-Nicolson Scheme.
 		
 %		\begin{equation}
 %			\begin{split}
@@ -709,7 +711,7 @@ Submitted to: \\[0.5\baselineskip]
 		\textbf{Boundary Conditions}
 		
 		\noindent
-		1) To satisfy the Dirilecht Boundary Condition, Eq. \ref{eq:bc1} is inserted into the Crank-Nicolson scheme (Eq. \ref{eq:cn}) at the left boundary node to obtain Eq. \ref{eq:cnbc1}., which is then solved simultaneously with the remaining equations. Again, note that $f_{BC1}$ represents the value of the left boundary conditions as defined by Eq. \ref{eq:bc1}.
+		1) To satisfy the Dirilecht Boundary Condition, the value at the left boundary (determined from Eq. \ref{eq:bc1}) is inserted into the Crank-Nicolson scheme (Eq. \ref{eq:cn}) at the left boundary node to obtain Eq. \ref{eq:cnbc1}., which is then solved simultaneously with the remaining equations. Again, note that $f_{BC1}$ represents the value of the left boundary conditions as defined by Eq. \ref{eq:bc1}.
 		
 %		 Dirilecht Condition at the Left Boundary x = 0:	\\
 %		
@@ -732,13 +734,13 @@ Submitted to: \\[0.5\baselineskip]
     		\noindent
 		Additionally, the boundary node is defined as in Eq. \ref{eq:explicitbc1}, reproduced below as Eq. \ref{eq:cnbc11}
 		
-		\boxedeq{eq:cnbc11}{u_{n + 1, 1} = \begin{cases} 
+		\boxedeq{eq:cnbc11}{f_{BC1} = u_{n + 1, 1} = \begin{cases} 
           			C_{1} * \frac{t}{t_{ramp}} & t\leq t_{ramp} \\
           			C_{1}                      & t > t_{ramp}
        			\end{cases}}
        			
 		\noindent
-		2) To satisfy the Neumann Condition, the First-Order Finite Difference Central Difference Scheme (Eq. \ref{eq:cds}) is applied with a ghost node to obtain Eq. \ref{eq:cnbc2} by plugging in Eq. \ref{eq:explicitbc2} into Eq. \ref{eq:cn}, where the ghost nodes is represented by $m$, the boundary node by $m-1$ etc.
+		2) To satisfy the Neumann Condition, the First-Order Finite Difference Central Difference Scheme (Eq. \ref{eq:cds}) is applied with a ghost node to obtain Eq. \ref{eq:cnbc2} by plugging Eq. \ref{eq:explicitbc2} into Eq. \ref{eq:cn}, where the ghost node is represented by $m$, the boundary node by $m-1$ etc.
 		 
 %		Neumann Condition at the Right Boundary x = L: \\
 %		
@@ -878,7 +880,7 @@ Submitted to: \\[0.5\baselineskip]
 		\begin{table}[h]
 			\caption{Explicit Euler Method Stability Tests}
 			\centering
-			\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+			\resizebox{\textwidth}{!}{\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
 				\hline
 				\makecell{Nodes \\ $NX$} & \makecell{Time Steps \\ $NT$} & \makecell{$K$} & $\Delta t$ & $\Delta x$ & $CFL$ & \makecell{Explicit Euler \\ Stability} & \makecell{Implicit Euler \\ Stability} & \makecell{Crank-Nicolson \\ Stability} \\
 				\hline \rowcolor{Gray} 
@@ -892,12 +894,15 @@ Submitted to: \\[0.5\baselineskip]
 				\hline \rowcolor{Gray}
 				100 & 50  & 0.1 & 0.80 & 0.063 & 20.26 & Unstable & Stable & Stable \\
 				\hline
-			\end{tabular}
+			\end{tabular}}
 			\label{tbl:stability}
 		\end{table}
 		\FloatBarrier
 		
+		\pagebreak
+		
 		\section{Error}
+		\label{sec:error}
 		
 		\subsection{Error Evolution Over Time}
 
@@ -910,9 +915,8 @@ Submitted to: \\[0.5\baselineskip]
 		\end{equation}
 		
 		\noindent
-		Note: $NX$ represents the number of spatial nodes and was used to normalize the residual
+		Note: $NX$ represents the number of spatial nodes and was used to normalize the residual \\
 		
-		\pagebreak
 		
 		\noindent
 		When no source term is present, the steady-state solution is simply a line with y-intercept = $C_{1} = 1$ and slope $C_{2} = -0.2$. As seen in Figure \ref{fig:compnosource}, all three methods converge to this steady-state solution in agreement with the pseudo-analytical solution obtained with fine spatial and temporal resolutions. All three methods have an initial spike in error due to the left boundary condition increasing from $0$ to $C_{1}$ over the time $t = 0 \rightarrow t=t_{ramp}$ as defined in Eq. \ref{eq:bc1}, and then the error decreases as the solution approaches a steady-state (Figure \ref{fig:evolutionnosource}).
@@ -940,8 +944,10 @@ Submitted to: \\[0.5\baselineskip]
 		\end{figure}
 		\FloatBarrier
 		
+		\pagebreak
+		
 		\noindent
-		When a source term is present ($q(x,t)$ defined by Eq.\ref{eq:hsource}), the steady-state solution (again defined as $T = 40s$) is the downward sloping temperature profile seen in Figure \ref{fig:compnosource} now superimposed by the temporal oscillation due to the source term. As seen in Figure \ref{fig:compsource}, all three methods converge closely to the pseudo-analytical solution at $T = 40 s$, and satisfy the imposed boundary conditions, verifying the accuracy of the numerical model with the addition of an arbitrary source function. Interestingly, the error of all three methods oscillates with the angular frequency of the source function ($1 \frac{rad}{s}$) and similar errors over time are observed for all three methods (Figure \ref{fig:evolutionsource}). However, the error is observed to gradually decrease as the solution approaches steady-state.
+		When a source term is present ($q(x,t)$ defined by Eq. \ref{eq:hsource}), the steady-state solution (again defined as $T = 40s$) is the downward sloping temperature profile seen in Figure \ref{fig:compnosource} now superimposed by the temporal oscillation due to the source term. As seen in Figure \ref{fig:compsource}, all three methods converge closely to the pseudo-analytical solution at $T = 40 s$, and satisfy the imposed boundary conditions, verifying the accuracy of the numerical model with the addition of an arbitrary source function. Interestingly, the error of all three methods oscillates with the angular frequency of the source function ($1 \frac{rad}{s}$) and similar errors over time are observed for all three methods (Figure \ref{fig:evolutionsource}). However, the error is observed to gradually decrease as the solution approaches steady-state.
 			
 		
 		\FloatBarrier
@@ -967,12 +973,78 @@ Submitted to: \\[0.5\baselineskip]
 		\end{figure}
 		\FloatBarrier
 		
+		\subsection{Error Expectations}
+		\label{sec:expectations}
+
+		\noindent
+		\textbf{Explicit Euler Method}
+		
+		\noindent
+		The Explicit Euler Method is Central in Space and Forward in Time. Therefore the error would be expected to be second-order in space and first-order in time (O($\Delta x^{2} + \Delta t$)). \\
+		
+		\noindent
+		\textbf{Implicit Euler Method}
+		
+		\noindent
+		The Implicit Euler Method is Central in Space and Forward in Time. Therefore the error would be expected to be second-order in space and first-order in time (O($\Delta x^{2} + \Delta t$)). \\
+		
+		\noindent
+		\textbf{Crank-Nicolson Method}
+		
+		\noindent
+		The Crank-Nicolson Method is Central in Space and Central in Time. Therefore the error would be expected to be second-order in space and second-order in time (O($\Delta x^{2} + \Delta t^{2}$)). \\
+		
+		\pagebreak
+		
+		\noindent
+		\textbf{Investigations}
+		
+		\noindent
+		The investigations in Section \ref{sec:spatial} and Section \ref{sec:temporal} are performed as follows. \\
+		
+		\noindent
+		\textbf{Spatial (Section \ref{sec:spatial})}
+		
+		\noindent
+		A pseudo-analytical solution is computed with $2^{18} = 262144$ spatial nodes and $2^{12} = 4096$ time steps using the parameters outlined in Table \ref{tbl:parameters}. The Heat Equation (Eq. \ref{eq:heat}) is then solved while varying the number of spatial nodes from $2^{3}\ to\ 2^{8} (8\ to\ 256$) and the error in comparison to the pseudo-analytical solution is calculated using Eq. \ref{eq:L2Norm}. This is done for all three methods and the error is then plotted as a function of $\Delta x$. Figure \ref{fig:expectdx} was created by simply plotting the expected errors for each method given the above information and should be used to compare the test results in Section \ref{sec:spatial}. It should be noted that the Explicit Euler and Implicit Euler methods are expected to converge as shown, where a knee in the error curve is present since the $\Delta t$ term will become dominant once $\Delta x$ becomes small enough. It should be noted that the Crank-Nicolson method is not expected to converge in the same way due to its error being second-order in time rather than first-order in time. \\
+		
+		\noindent
+		\textbf{Temporal (Section \ref{sec:temporal})}
+		
+		\noindent
+		Again, a pseudo-analytical solution is computed, this time with $2^{6} = 64$ spatial nodes (So that the Von Neumann stability condition (Eq. \ref{eq:vonneumann}) remains satisfied for a few data points for Explicit Euler stability) and $2^{14} = 16384$ time steps using the parameters outlined in Table \ref{tbl:parameters}. The Heat Equation (Eq. \ref{eq:heat}) is then solved while varying the number of time steps from $2^{3}\ to\ 2^{11}$ ($8\ to\ 2048$) and the error in comparison to the pseudo-analytical solution is calculated using Eq. \ref{eq:L2Norm}. T his is done for all three methods and hte error is then plotted as a function of $\Delta t$. Figure \ref{fig:expectdt} was created by plotting the expected errors for each method given the above information and should be used to compare the test results in Section \ref{sec:temporal}. It should be noted that the Crank-Nicolson method are expected to converge as shown, where a knee/reduction in slope in the error curve is present since the $\Delta x^{2}$ term will become dominant once the $\Delta t^{2}$ becomes small at small $\Delta t$. This behavior is not expected for the Explicit Euler and Implicit Euler methods since $\Delta t$ remains large enough to not be negligible compared to the $\Delta t^{2}$ reduction in error in Crank-Nicolson. The result should appear almost as three identical lines at small $\Delta t$ due to this behavior.
+		
+
+		\FloatBarrier
+		\begin{figure}[!h]
+			\captionsetup[subfigure]{justification=centering}
+			\centering
+			
+			\begin{subfigure}{.45\textwidth}
+				\centering
+				\includegraphics[width=1\linewidth]{"Figures/TrendsDX"}
+				\caption{Expected Error as Function of DX}
+				\label{fig:expectdx}
+			\end{subfigure}
+			\begin{subfigure}{.45\textwidth}
+				\centering
+				\includegraphics[width=1\linewidth]{"Figures/TrendsDT"}
+				\caption{Expected Error as Function of DT}
+				\label{fig:expectdt}
+			\end{subfigure}
+			
+			\caption{Expected Trends in Error}
+			\label{fig:expect}
+		\end{figure}
+		\FloatBarrier		
+		
 		\pagebreak
 		
 		\subsection{Spatial Resolution}
-
+		\label{sec:spatial}
+		
 		\noindent
-		The error (as defined by the L-2 norm in Eq. \ref{eq:L2Norm}) of the three methods as a function of changing spatial resolution was investigated by again calculating a pseudo-analytical solution with extremely fine spatial and temporal resolution using the Crank-Nicolson method, and comparing the results of each method with varying number of spatial nodes. The comparison was performed at the steady-state ($T = 40 s$) and was performed for both the case without a source term (Figure \ref{fig:spatialnosource}) and the case with the source term defined as in Eq. \ref{eq:hsource} (Figure \ref{fig:spatialsource}).	Each case was run at 20 different spatial node counts, varying from 8 nodes to 256 nodes ($2^{3} - 2^{8}\ nodes\ \rightarrow \Delta x = 7.9*10^{-1}\ - 2.5*10^{-2}$), and a constant number of timesteps ($2^{12} = 4096\ timesteps \rightarrow \Delta t = 9.77 * 10^{-3} s$) so that the error could be investigated as solely a function of changing spatial step size. The results are presented on logarithmic axes below in Figure \ref{fig:spatial}. For comparison, the first-order and second-order curves with respect to spatial resolution ($\Delta x$) were additionally plotted.
+		The error (as defined by the L-2 norm in Eq. \ref{eq:L2Norm}) of the three methods as a function of changing spatial resolution was investigated by again calculating a pseudo-analytical solution with extremely fine spatial and temporal resolution using the Crank-Nicolson method, and comparing the results of each method with varying number of spatial nodes. The comparison was performed at the steady-state ($T = 40 s$) and was performed for both the case without a source term (Figure \ref{fig:spatialnosource}) and the case with the source term defined as in Eq. \ref{eq:hsource} (Figure \ref{fig:spatialsource}). Each case was run at 20 different spatial node counts, varying from 8 nodes to 256 nodes ($2^{3} - 2^{8}\ nodes\ \rightarrow \Delta x = 7.9*10^{-1}\ - 2.5*10^{-2}$), and a constant number of timesteps ($2^{12} = 4096\ timesteps \rightarrow \Delta t = 9.77 * 10^{-3} s$) so that the error could be investigated as solely a function of changing spatial step size. The results are presented on logarithmic axes below in Figure \ref{fig:spatial}. For comparison, the first-order and second-order curves with respect to spatial resolution ($\Delta x$) were additionally plotted.
 		
 		\FloatBarrier
 		\begin{figure}[h]
@@ -996,12 +1068,16 @@ Submitted to: \\[0.5\baselineskip]
 		\FloatBarrier
 
 		\noindent
-		Since the Heat Equation (Eq. \ref{eq:heat}) was discretized spatially using the Second-Order Central Difference Scheme (Eq. \ref{eq:fd2}) for all three methods, analysis of the truncation error from the Taylor expansion indicates that the error should be of order O($\Delta x^{2}$). This would translate to a slope of $2$ on a log-log plot, and the matching result can be seen above for both the no source and source case in Figure \ref{fig:spatial} for all three methods, confirming that all three methods have error of order O($\Delta x^{2}$).	
+		Since the Heat Equation (Eq. \ref{eq:heat}) was discretized spatially using the Second-Order Central Difference Scheme (Eq. \ref{eq:fd2}) for all three methods, analysis of the truncation error from the Taylor expansion indicates that the error should be of order O($\Delta x^{2}$). This would translate to a slope of $2$ on a log-log plot, and the matching result can be seen above for both the no source and source case in Figure \ref{fig:spatial} for all three methods, confirming that all three methods have error of order O($\Delta x^{2}$). \\
+		
+		\noindent
+		The convergence of the Implicit method, when no source is present (Figure \ref{fig:spatialnosource}), and of both the Explicit Euler and Implicit Euler methods when a source is present (Figure \ref{fig:spatialsource}), once $\Delta x$ reaches a critical value should be noted. Since the error is a function of both the discretization of time and space, this can best be explained by noting that for the Explicit Euler and Implicit Euler methods the total error scales with O($\Delta x^{2} + \Delta t$) (Second-Order in space, First-Order in time). As a result, as $\Delta x$ becomes increasing small, the error is dominated by the $\Delta t$ term, which is being held constant. The lack of convergence for the Crank-Nicolson method can best be explained by its error scale as well since the method has error of the order O($\Delta x^{2} + \Delta t^{2}$) (Second-Order in space, Second-Order in time). This indicates that the $\Delta t^{2}$ term will not begin to dominate until a much smaller critical $\Delta x$, at which point the Crank-Nicolson method would also be expected to converge for the given timestep. This was previously explained in Section \ref{sec:expectations}.
 		
 		\pagebreak
 		
 		\subsection{Temporal Resolution}
-
+		\label{sec:temporal}
+		
 		\noindent
 		The error (again defined by Eq. \ref{eq:L2Norm}) of the three methods was next calculated as a function of changing temporal resolution using the psuedo-analytical solution calculated before. The comparison was performed again at steady-state ($T = 40 s$) and was performed for both the case without a source term (Figure \ref{fig:temporalnosource}) and with a source term as defined in Eq. \ref{eq:hsource} (Figure \ref{fig:temporalsource}). Each case was again run 20 times, this time at various timestep counts, which varied from 8 timesteps to 2048 timesteps ($2^{3}\ timesteps - 2^{11}\ timesteps\ \rightarrow	\Delta t = 5 s - 1.9 * 10^{-1} s$) and a constant number of spatial nodes ($2^{6}\ nodes\ \rightarrow \Delta x = 9.8*10^{-1} $). A finer spatial resolution was not chosen so that the Von Neumann stability criteria (Eq. \ref{eq:vonneumann}) would be able to be satisfied for the Explicit method runs (a very fine mesh would require an unrealistically small timestep for the Explicit method to remain stable for any of the 20 runs). However, this spatial resolution was maintained as constant for all runs so that the error as a function of solely temporal resolution could be investigated. The results are presented on logarithmic axes below in Figure \ref{fig:temporal}. For comparison, the first-order and second-order curves with respect to temporal resolution ($\Delta t$) were additionally plotted.
 		
@@ -1012,26 +1088,101 @@ Submitted to: \\[0.5\baselineskip]
 			\begin{subfigure}{.45\textwidth}
 				\centering
 				\includegraphics[width=\linewidth]{"Figures/MATLAB/ConstantDXNoSource"}
-				\caption{Error as a Function of Temporal Step with No Source Term}
+				\caption{Error with No Source Term}
 				\label{fig:temporalnosource}
 			\end{subfigure}
 			\begin{subfigure}{.45\textwidth}
 				\centering
 				\includegraphics[width=\linewidth]{"Figures/MATLAB/ConstantDXSource"}
-				\caption{Error as a Function of Temporal Step with Source Term}
+				\caption{Error with Source Term}
 				\label{fig:temporalsource}
 			\end{subfigure}
+		\caption{Error as a Function of Time Step}
 		\label{fig:temporal}
 		\end{figure}		
 		\FloatBarrier
 		
 		\noindent
-		Since the Heat Equation (Eq. \ref{eq:heat}) was discretized temporally using a simple First-Order Forward-Difference Scheme		
+		Since the Heat Equation (Eq. \ref{eq:heat}) was discretized temporally using a simple First-Order Forward-Difference Scheme for the Explicit Euler and Implicit Euler methods and a Second-Order Central-Difference Scheme for the Crank-Nicolson method, it is expected that the Explicit and Implicit methods would have error of order O($\Delta t$) while the Crank-Nicolson would have error of order O($\Delta t^{2}$). This would translate to slopes of 1 and 2 on a log-log plot, respectively. However, according to Figure \ref{fig:temporal}, it appears that the Crank-Nicolson has error only of order O($\Delta t$) rather than O($\Delta t^{2}$), similar to the Explicit Euler and Implicit Euler methods. This is again best explained by the fact that the error is a function of both discretized time and space. Since a larger spatial step (low spatial resolution) was chosen as constant while the timestep exponentially decreased so that the Explicit Euler method would remain stable for at least a few data points, the spatial step ($\Delta x$) came to dominate the error terms as the time step ($\Delta t$) decrease rapidly. For the Crank-Nicolson scheme, which has error O($\Delta x^{2} + \Delta t^{2}$), once the time step became small, the error from the $\Delta x$ term came to dominate, resulting in the curve which is similar to the Explicit and Implicit Euler Schemes at small timesteps. This was previously explained in Section \ref{sec:expectations}.
+		
+		\pagebreak
+		
+		\subsection{Constant Courant Number (CFL)}
+		
+		\noindent
+		Lastly, the Courant Number (CFL) was held as constant as possible at $CFL \approx 0.40$ and error was plotted as both a function of changing spatial resolution and changing time step for both the no source term case and the source term case. Again, similar behavior is observed in accordance with the our expectations given our analytical error analysis (Section \ref{sec:expectations}). 
+		
+		\FloatBarrier
+		\begin{figure}[h]
+			\captionsetup{justification=centering}
+			\centering
+			\begin{subfigure}{0.45\textwidth}
+				\centering
+				\captionsetup{justification=centering}
+				\includegraphics[width=\linewidth]{"Figures/MATLAB/ConstantCFLNoSource"}
+				\caption{Error with No Source Term}
+				\label{fig:CFLnosource}
+			\end{subfigure}
+			\begin{subfigure}{0.45\textwidth}
+				\centering
+				\captionsetup{justification=centering}
+				\includegraphics[width=\linewidth]{"Figures/MATLAB/ConstantCFLSource"}
+				\caption{Error with Source Term}
+				\label{fig:CFLsource}
+			\end{subfigure}
+			\caption{Error with constant Courant Number (CFL)}
+			\label{fig:CFL}
+		\end{figure}
+		\FloatBarrier
+		
+		\noindent
+		The two cases (no source term and source term) were ran with the following number of nodes and time steps in order to achieve a CFL number as close to $0.4$ as possible. Note how slowly the number of nodes increases compared to the number of time steps, highlighting how difficult it is to use the Explicit Euler Method to calculate steady-state solutions with high spatial resolution, as it would require many time steps in order to remain stable.		
+		
+		\FloatBarrier
+		\begin{table}[h]
+			\caption{Constant CFL Number of 0.4}
+			\centering
+			\resizebox{0.8\textwidth}{!}{\begin{tabular}{|c|c|c|c|c|c|c|c|}
+				\hline
+				Length & Time & \makecell{Time Steps \\ $NT$} & \makecell{Nodes \\ $NX$} & \makecell{$K$} & $\Delta t$ & $\Delta x$ & $CFL$\\
+				\hline \rowcolor{Gray} 
+				$2\pi$ & $40 s$ & 8    & 6   & 0.1 & 5.000 & 1.047 & 0.456 \\
+				\hline
+				$2\pi$ & $40 s$ & 16   & 8   & 0.1 & 2.500 & 0.785 & 0.405 \\
+				\hline  \rowcolor{Gray} 
+				$2\pi$ & $40 s$ & 32   & 11  & 0.1 & 1.250 & 0.571 & 0.383 \\
+				\hline 
+				$2\pi$ & $40 s$ & 64   & 16  & 0.1 & 0.625 & 0.393 & 0.405 \\
+				\hline \rowcolor{Gray}
+				$2\pi$ & $40 s$ & 128  & 22  & 0.1 & 0.313 & 0.286 & 0.383 \\
+				\hline 
+				$2\pi$ & $40 s$ & 256  & 32  & 0.1 & 0.156 & 0.196 & 0.405 \\
+				\hline \rowcolor{Gray}
+				$2\pi$ & $40 s$ & 512  & 45  & 0.1 & 0.078 & 0.140 & 0.400 \\
+				\hline 
+				$2\pi$ & $40 s$ & 1024 & 64  & 0.1 & 0.039 & 0.098 & 0.405 \\
+				\hline \rowcolor{Gray}
+				$2\pi$ & $40 s$ & 2048 & 90  & 0.1 & 0.020 & 0.070 & 0.400 \\
+				\hline
+			\end{tabular}}
+			\label{tbl:stability}
+		\end{table}
+		\FloatBarrier
 		
 		\pagebreak
 		
 		\section{Conclusions}
+		\noindent
+		The Heat Equation (Eq. \ref{eq:heat}) can be numerically solved using the finite difference methods explored as well as finite element methods, relaxation methods, and spectral methods which are outside the scope of this project. The three methods developed, programmed and analyzed were the Explicit Euler Method, the Implicit Euler Method, and the Crank-Nicolson Method. Each was discretized using a Second-Order Central Difference Scheme (Eq. \ref{eq:cds}) spatially and a First-Order Scheme temporally. They were then run with a fixed-free boundary condition at various spatial and temporal resolutions to characterize their stability and their respective residuals. This was done both with no source term and with a source term defined by Eq. \ref{eq:hsource}. \\
+
+		\noindent		
+		The stability of the three methods was investigated, and as expected, the Explicit Euler Method was found to be conditionally stable (Von Neumann Stability) while the Implicit Euler Method and the Crank-Nicolson Method were both unconditionally stable. The stability criterion for the Explicit Euler Method was such that the Courant Number (CFL Eq. \ref{eq:cfl}) was required to be less than $\frac{1}{2}$ for stability to be achieved. This number represents the rate at which information is being passed along spatially over each time step, and when too large, represents a loss in information that eventually leads to instability. \\
 		
+		\noindent
+		As expected, the Explicit Euler and Implicit Euler Methods were found to have error of order O($\Delta x^{2} + \Delta t$) while the Crank-Nicolson Method was found to have error of order O($\Delta x^{2} + \Delta t^{2}$) since it is second-order in both space and time. However, care must be taken when plotting each methods respective errors since the error is a function of both the spatial step and the time step. As one term become dominant as either spatial step or time step is decreased while the other is held constant, this results in the methods having convergent behavior. It is best to decrease both the spatial step and the time step together to avoid this, but it still remains difficult to separate the two source of error due to the two discretizations (of space and of time). Sections \ref{sec:error} explored this in great detail. \\
+		
+		\noindent
+		All three methods have their strengths and weaknesses, however the Crank-Nicolson method provides the most robust solution in terms of both stability and accuracy, allowing users to maintain high spatial resolution and large time steps (corresponding to large CFL number) without losing stability nor accuracy. Is also has the added advantage of begin second-order in time, whereas the Explicit Euler and Implicit Euler methods are only first-order in time. This makes it possible to accurately and stably simulate phenomenon over long periods of time with a reasonable amount of computational power, whereas the Explicit Euler Method would require much smaller time steps to remain stable and therefore much more computational power for the same computation, and the Implicit Euler Method would have reduced accuracy.
 		\pagebreak	
 	
 	\section{Appendix}
