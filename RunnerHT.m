@@ -116,9 +116,12 @@ AA = NumHT(0, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG);
 BB = NumHT(1, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG);
 CC = NumHT(2, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG);
 
+
+
+
+
 fCompare2 = figure('Name', 'Solution Comparison: T = 40', 'NumberTitle', 'off');
 figure(fCompare2); hold on;
-
 
 subplot(2, 2, 1);
 plot(XX(1:end-1), BASELINE(end, :), '-', 'Color', COLORS(4, :), 'LineWidth', 2, 'DisplayName', 'Baseline');
@@ -144,9 +147,6 @@ suptitle('Time = 40 s');
 
 saveas(fCompare2, 'Figures/MATLAB/SourceCompare.png');
 saveas(fCompare2, 'Figures/MATLAB/Figs/SourceCompare.fig');
-
-
-
 
 
 

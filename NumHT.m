@@ -52,6 +52,7 @@ function U = NumHT(SCHEME, BC1, BC2, KT, L, NX, TM, NT, TR, SOURCE_FLAG, W, SIGM
         fprintf('QMAX: %.2f\t\tOMEGA: %.2f rad/s\t\tSIGMA: %.2f\t\t L: %.2f\n\n', QMAX, W, SIGMA, LENGTH);
     end
     fprintf('CFL Number: %.5f\n', CFL);
+    
     % Initialize Matrices
     U = zeros(TIMESTEPS, NODES + 2); Q = zeros(TIMESTEPS, NODES + 2);
     
